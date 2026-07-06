@@ -43,13 +43,14 @@ export function RegisterForm() {
   }
 
   return (
-    <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-      <div className="space-y-4">
+    <form className="space-y-5" onSubmit={form.handleSubmit(onSubmit)}>
+      <div className="space-y-5">
         <div className="space-y-2">
           <Label htmlFor="first_name">First name</Label>
           <Input
             id="first_name"
             autoComplete="given-name"
+            placeholder="Enter first name"
             {...form.register("first_name")}
           />
           {form.formState.errors.first_name ? (
@@ -63,6 +64,7 @@ export function RegisterForm() {
           <Input
             id="last_name"
             autoComplete="family-name"
+            placeholder="Enter last name"
             {...form.register("last_name")}
           />
           {form.formState.errors.last_name ? (
@@ -74,7 +76,13 @@ export function RegisterForm() {
       </div>
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
-        <Input id="email" type="email" autoComplete="email" {...form.register("email")} />
+        <Input
+          id="email"
+          type="email"
+          autoComplete="email"
+          placeholder="Enter email"
+          {...form.register("email")}
+        />
         {form.formState.errors.email ? (
           <p className="text-sm text-red-600">{form.formState.errors.email.message}</p>
         ) : null}
@@ -85,6 +93,7 @@ export function RegisterForm() {
           id="password"
           type="password"
           autoComplete="new-password"
+          placeholder="Enter password"
           {...form.register("password")}
         />
         {form.formState.errors.password ? (
@@ -99,6 +108,7 @@ export function RegisterForm() {
           id="confirmPassword"
           type="password"
           autoComplete="new-password"
+          placeholder="Confirm password"
           {...form.register("confirmPassword")}
         />
         {form.formState.errors.confirmPassword ? (
@@ -108,11 +118,19 @@ export function RegisterForm() {
         ) : null}
       </div>
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
-      <Button className="w-full" type="submit" disabled={form.formState.isSubmitting}>
+      <Button
+        className="w-full bg-neutral-950 text-white hover:bg-neutral-800"
+        type="submit"
+        disabled={form.formState.isSubmitting}
+      >
         Register
       </Button>
-      <p className="text-sm">
-        <Link className="text-primary underline-offset-4 hover:underline" href="/login">
+      <p className="text-center text-sm text-muted-foreground">
+        Already have an account?{" "}
+        <Link
+          className="text-neutral-950 underline-offset-4 hover:underline"
+          href="/login"
+        >
           Log in
         </Link>
       </p>

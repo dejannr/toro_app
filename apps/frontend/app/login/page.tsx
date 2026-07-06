@@ -1,12 +1,13 @@
+import { AuthPageLayout } from "@/components/auth/auth-page-layout";
 import { AuthFormShell } from "@/components/auth/auth-form-shell";
 import { LoginForm } from "@/components/auth/login-form";
 
 export default function LoginPage() {
   return (
-    <main className="flex min-h-screen items-center px-4 py-10">
-      <AuthFormShell title="Log in">
+    <AuthPageLayout>
+      <AuthFormShell title="Welcome back" subtitle="Enter your account details.">
         <LoginForm />
       </AuthFormShell>
-    </main>
+    </AuthPageLayout>
   );
 }

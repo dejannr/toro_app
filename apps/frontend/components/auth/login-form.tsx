@@ -32,10 +32,16 @@ export function LoginForm() {
   }
 
   return (
-    <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+    <form className="space-y-5" onSubmit={form.handleSubmit(onSubmit)}>
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
-        <Input id="email" type="email" autoComplete="email" {...form.register("email")} />
+        <Input
+          id="email"
+          type="email"
+          autoComplete="email"
+          placeholder="Enter email"
+          {...form.register("email")}
+        />
         {form.formState.errors.email ? (
           <p className="text-sm text-red-600">{form.formState.errors.email.message}</p>
         ) : null}
@@ -46,6 +52,7 @@ export function LoginForm() {
           id="password"
           type="password"
           autoComplete="current-password"
+          placeholder="Enter password"
           {...form.register("password")}
         />
         {form.formState.errors.password ? (
@@ -55,15 +62,22 @@ export function LoginForm() {
         ) : null}
       </div>
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
-      <Button className="w-full" type="submit" disabled={form.formState.isSubmitting}>
+      <Button
+        className="w-full bg-neutral-950 text-white hover:bg-neutral-800"
+        type="submit"
+        disabled={form.formState.isSubmitting}
+      >
         Log in
       </Button>
-      <div className="flex items-center justify-between text-sm">
-        <Link className="text-primary underline-offset-4 hover:underline" href="/register">
+      <div className="flex items-center justify-between text-sm text-muted-foreground">
+        <Link
+          className="text-neutral-950 underline-offset-4 hover:underline"
+          href="/register"
+        >
           Register
         </Link>
         <Link
-          className="text-primary underline-offset-4 hover:underline"
+          className="text-neutral-950 underline-offset-4 hover:underline"
           href="/forgot-password"
         >
           Forgot password
