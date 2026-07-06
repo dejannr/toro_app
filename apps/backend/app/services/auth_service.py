@@ -20,8 +20,19 @@ async def get_user_by_id(session: AsyncSession, user_id: object) -> User | None:
     return await session.get(User, user_id)
 
 
-async def create_user(session: AsyncSession, email: str, password: str) -> User:
-    user = User(email=email.lower(), hashed_password=hash_password(password))
+async def create_user(
+    session: AsyncSession,
+    first_name: str,
+    last_name: str,
+    email: str,
+    password: str,
+) -> User:
+    user = User(
+        first_name=first_name.strip(),
+        last_name=last_name.strip(),
+        email=email.lower(),
+        hashed_password=hash_password(password),
+    )
     session.add(user)
     await session.commit()
     await session.refresh(user)

@@ -8,10 +8,14 @@ import type {
 
 export type CurrentUser = {
   id: string;
+  first_name: string;
+  last_name: string;
   email: string;
   is_active: boolean;
   is_verified: boolean;
 };
+
+type RegisterPayload = Omit<RegisterValues, "confirmPassword">;
 
 export async function getCurrentUser(
   cookieHeader?: string
@@ -33,7 +37,7 @@ export function login(values: LoginValues): Promise<CurrentUser> {
   });
 }
 
-export function register(values: RegisterValues): Promise<CurrentUser> {
+export function register(values: RegisterPayload): Promise<CurrentUser> {
   return apiFetch<CurrentUser>("/auth/register", {
     method: "POST",
     body: JSON.stringify(values)

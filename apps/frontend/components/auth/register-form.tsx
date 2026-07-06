@@ -17,13 +17,24 @@ export function RegisterForm() {
   const [error, setError] = useState<string | null>(null);
   const form = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { email: "", password: "" }
+    defaultValues: {
+      first_name: "",
+      last_name: "",
+      email: "",
+      password: "",
+      confirmPassword: ""
+    }
   });
 
   async function onSubmit(values: RegisterValues) {
     setError(null);
     try {
-      await register(values);
+      await register({
+        first_name: values.first_name,
+        last_name: values.last_name,
+        email: values.email,
+        password: values.password
+      });
       router.push("/dashboard");
       router.refresh();
     } catch (err) {
@@ -33,6 +44,34 @@ export function RegisterForm() {
 
   return (
     <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="first_name">First name</Label>
+          <Input
+            id="first_name"
+            autoComplete="given-name"
+            {...form.register("first_name")}
+          />
+          {form.formState.errors.first_name ? (
+            <p className="text-sm text-red-600">
+              {form.formState.errors.first_name.message}
+            </p>
+          ) : null}
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="last_name">Last name</Label>
+          <Input
+            id="last_name"
+            autoComplete="family-name"
+            {...form.register("last_name")}
+          />
+          {form.formState.errors.last_name ? (
+            <p className="text-sm text-red-600">
+              {form.formState.errors.last_name.message}
+            </p>
+          ) : null}
+        </div>
+      </div>
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
         <Input id="email" type="email" autoComplete="email" {...form.register("email")} />
@@ -51,6 +90,20 @@ export function RegisterForm() {
         {form.formState.errors.password ? (
           <p className="text-sm text-red-600">
             {form.formState.errors.password.message}
+          </p>
+        ) : null}
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="confirmPassword">Confirm password</Label>
+        <Input
+          id="confirmPassword"
+          type="password"
+          autoComplete="new-password"
+          {...form.register("confirmPassword")}
+        />
+        {form.formState.errors.confirmPassword ? (
+          <p className="text-sm text-red-600">
+            {form.formState.errors.confirmPassword.message}
           </p>
         ) : null}
       </div>

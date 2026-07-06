@@ -35,6 +35,8 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 def user_to_read(user: User) -> UserRead:
     return UserRead(
         id=str(user.id),
+        first_name=user.first_name,
+        last_name=user.last_name,
         email=user.email,
         is_active=user.is_active,
         is_verified=user.is_verified,
@@ -89,7 +91,13 @@ async def register(
             status_code=status.HTTP_409_CONFLICT,
             detail="An account with this email already exists",
         )
-    user = await create_user(session, payload.email, payload.password)
+    user = await create_user(
+        session,
+        payload.first_name,
+        payload.last_name,
+        payload.email,
+        payload.password,
+    )
     set_auth_cookies(response, user)
     return user_to_read(user)
 

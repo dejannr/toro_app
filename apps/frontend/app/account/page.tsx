@@ -16,6 +16,9 @@ export default async function AccountPage() {
     <AppShell>
       <section className="space-y-2">
         <h1 className="text-xl font-semibold">Account</h1>
+        <p className="text-sm text-foreground">
+          {user.first_name} {user.last_name}
+        </p>
         <p className="text-sm text-muted-foreground">{user.email}</p>
       </section>
     </AppShell>
