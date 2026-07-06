@@ -12,9 +12,9 @@ export function AuthPageLayout({ children }: AuthPageLayoutProps) {
         {children}
       </section>
       <section className="hidden min-h-screen p-3 lg:block">
-        <div className="relative h-full overflow-hidden rounded-[28px] border-[5px] border-[#FBFBFB] bg-muted">
+        <div className="relative h-full overflow-hidden rounded-[28px] border-[3px] border-[#EFEFEF] bg-muted">
           <Image
-            src="/img.png"
+            src="/img.jpeg"
             alt=""
             fill
             priority
