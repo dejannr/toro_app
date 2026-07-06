@@ -11,15 +11,17 @@ export function AuthPageLayout({ children }: AuthPageLayoutProps) {
       <section className="flex min-h-screen items-center justify-center px-6 py-10">
         {children}
       </section>
-      <section className="relative hidden min-h-screen overflow-hidden rounded-l-[28px] bg-muted lg:block">
-        <Image
-          src="/img.png"
-          alt=""
-          fill
-          priority
-          sizes="50vw"
-          className="object-cover"
-        />
+      <section className="hidden min-h-screen p-3 lg:block">
+        <div className="relative h-full overflow-hidden rounded-[28px] border border-[#FBFBFB] bg-muted">
+          <Image
+            src="/img.png"
+            alt=""
+            fill
+            priority
+            sizes="50vw"
+            className="object-cover"
+          />
+        </div>
       </section>
     </main>
   );

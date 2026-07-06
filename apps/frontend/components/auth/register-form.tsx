@@ -119,7 +119,7 @@ export function RegisterForm() {
       </div>
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
       <Button
-        className="w-full bg-neutral-950 text-white hover:bg-neutral-800"
+        className="w-full bg-[#161616] text-white hover:bg-[#161616]/90"
         type="submit"
         disabled={form.formState.isSubmitting}
       >
@@ -128,7 +128,7 @@ export function RegisterForm() {
       <p className="text-center text-sm text-muted-foreground">
         Already have an account?{" "}
         <Link
-          className="text-neutral-950 underline-offset-4 hover:underline"
+          className="text-[#161616] underline-offset-4 hover:underline"
           href="/login"
         >
           Log in
