@@ -87,20 +87,17 @@ docker compose run --rm backend alembic upgrade head
 
 ## Run Script
 
-The root `run.sh` script can manage the project locally:
+The root `run.sh` script starts the backend and frontend in one terminal:
 
 ```bash
 ./run.sh setup
-./run.sh start
-./run.sh status
-./run.sh logs
-./run.sh stop
+./run.sh
 ```
 
-`./run.sh start` uses Docker Compose when Docker is installed. If Docker is not
-available, it starts the backend and frontend directly with local dependencies.
-For direct local mode, PostgreSQL and Redis must already be running separately
-for authentication flows that touch the database or cache.
+Logs stream directly in the terminal. Press `Ctrl+C` to stop both processes.
+
+PostgreSQL and Redis must be running separately for authentication flows that
+touch the database or cache.
 
 ## Frontend Commands
 
