@@ -26,6 +26,9 @@ export function AppShell({ children }: AppShellProps) {
             >
               <Link href="/app/dashboard">Dashboard</Link>
             </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/app/logout">Log out</Link>
+            </Button>
           </nav>
         </div>
       </header>

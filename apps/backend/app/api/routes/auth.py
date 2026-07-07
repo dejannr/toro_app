@@ -165,7 +165,7 @@ async def verify_email(
     set_auth_cookies(response, hydrated_user)
     return VerifyEmailResponse(
         message="Email verified",
-        onboarding_path="/app/onboarding",
+        onboarding_path="/app/dashboard",
         user=user_to_read(hydrated_user),
     )
 
