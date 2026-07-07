@@ -39,10 +39,15 @@ export function ResetPasswordForm() {
   }
 
   return (
-    <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+    <form className="space-y-5" onSubmit={form.handleSubmit(onSubmit)}>
       <div className="space-y-2">
         <Label htmlFor="token">Reset token</Label>
-        <Input id="token" autoComplete="off" {...form.register("token")} />
+        <Input
+          id="token"
+          autoComplete="off"
+          placeholder="Enter reset token"
+          {...form.register("token")}
+        />
         {form.formState.errors.token ? (
           <p className="text-sm text-red-600">{form.formState.errors.token.message}</p>
         ) : null}
@@ -53,6 +58,7 @@ export function ResetPasswordForm() {
           id="password"
           type="password"
           autoComplete="new-password"
+          placeholder="Enter new password"
           {...form.register("password")}
         />
         {form.formState.errors.password ? (
@@ -63,11 +69,18 @@ export function ResetPasswordForm() {
       </div>
       {message ? <p className="text-sm text-muted-foreground">{message}</p> : null}
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
-      <Button className="w-full" type="submit" disabled={form.formState.isSubmitting}>
+      <Button
+        className="w-full bg-[#161616] text-white hover:bg-[#161616]/90"
+        type="submit"
+        disabled={form.formState.isSubmitting}
+      >
         Reset password
       </Button>
       <p className="text-sm">
-        <Link className="text-primary underline-offset-4 hover:underline" href="/login">
+        <Link
+          className="text-[#161616] underline-offset-4 hover:underline"
+          href="/app/login"
+        >
           Back to login
         </Link>
       </p>

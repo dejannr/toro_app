@@ -1,5 +1,6 @@
 import { apiFetch } from "@/lib/api";
 import type {
+  CompanyOnboardingValues,
   ForgotPasswordValues,
   LoginValues,
   RegisterValues,
@@ -13,9 +14,27 @@ export type CurrentUser = {
   email: string;
   is_active: boolean;
   is_verified: boolean;
+  company: {
+    id: string;
+    legal_name: string;
+    role: string;
+  } | null;
 };
 
 type RegisterPayload = Omit<RegisterValues, "confirmPassword">;
+type RegisterResponse = {
+  message: string;
+  fake_email: {
+    to: string;
+    subject: string;
+    verify_url: string;
+  };
+};
+type VerifyEmailResponse = {
+  message: string;
+  onboarding_path: string;
+  user: CurrentUser;
+};
 
 export async function getCurrentUser(
   cookieHeader?: string
@@ -37,10 +56,17 @@ export function login(values: LoginValues): Promise<CurrentUser> {
   });
 }
 
-export function register(values: RegisterPayload): Promise<CurrentUser> {
-  return apiFetch<CurrentUser>("/auth/register", {
+export function register(values: RegisterPayload): Promise<RegisterResponse> {
+  return apiFetch<RegisterResponse>("/auth/register", {
     method: "POST",
     body: JSON.stringify(values)
+  });
+}
+
+export function verifyEmail(token: string): Promise<VerifyEmailResponse> {
+  return apiFetch<VerifyEmailResponse>("/auth/verify-email", {
+    method: "POST",
+    body: JSON.stringify({ token })
   });
 }
 
@@ -67,4 +93,19 @@ export function resetPassword(
     method: "POST",
     body: JSON.stringify(values)
   });
+}
+
+export function createCompanyOnboarding(
+  values: CompanyOnboardingValues
+): Promise<{ id: string; legal_name: string; role: string }> {
+  return apiFetch<{ id: string; legal_name: string; role: string }>(
+    "/companies/onboarding",
+    {
+      method: "POST",
+      body: JSON.stringify({
+        legal_name: values.legal_name,
+        trade_name: values.trade_name || null
+      })
+    }
+  );
 }

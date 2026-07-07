@@ -29,13 +29,17 @@ export function RegisterForm() {
   async function onSubmit(values: RegisterValues) {
     setError(null);
     try {
-      await register({
+      const response = await register({
         first_name: values.first_name,
         last_name: values.last_name,
         email: values.email,
         password: values.password
       });
-      router.push("/dashboard");
+      const params = new URLSearchParams({
+        email: response.fake_email.to,
+        verify: response.fake_email.verify_url
+      });
+      router.push(`/app/check-email?${params.toString()}`);
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to register");
@@ -129,7 +133,7 @@ export function RegisterForm() {
         Already have an account?{" "}
         <Link
           className="text-[#161616] underline-offset-4 hover:underline"
-          href="/login"
+          href="/app/login"
         >
           Log in
         </Link>

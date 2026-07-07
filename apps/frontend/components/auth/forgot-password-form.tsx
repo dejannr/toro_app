@@ -34,21 +34,34 @@ export function ForgotPasswordForm() {
   }
 
   return (
-    <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+    <form className="space-y-5" onSubmit={form.handleSubmit(onSubmit)}>
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
-        <Input id="email" type="email" autoComplete="email" {...form.register("email")} />
+        <Input
+          id="email"
+          type="email"
+          autoComplete="email"
+          placeholder="Enter email"
+          {...form.register("email")}
+        />
         {form.formState.errors.email ? (
           <p className="text-sm text-red-600">{form.formState.errors.email.message}</p>
         ) : null}
       </div>
       {message ? <p className="text-sm text-muted-foreground">{message}</p> : null}
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
-      <Button className="w-full" type="submit" disabled={form.formState.isSubmitting}>
+      <Button
+        className="w-full bg-[#161616] text-white hover:bg-[#161616]/90"
+        type="submit"
+        disabled={form.formState.isSubmitting}
+      >
         Request reset
       </Button>
       <p className="text-sm">
-        <Link className="text-primary underline-offset-4 hover:underline" href="/login">
+        <Link
+          className="text-[#161616] underline-offset-4 hover:underline"
+          href="/app/login"
+        >
           Back to login
         </Link>
       </p>

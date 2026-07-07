@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-const protectedRoutes = ["/dashboard", "/account"];
-const authRoutes = ["/login", "/register"];
+const protectedRoutes = ["/app/dashboard", "/app/account", "/app/onboarding"];
+const authRoutes = ["/app/login", "/app/register"];
 
 export function middleware(request: NextRequest) {
   const accessToken = request.cookies.get("access_token")?.value;
@@ -13,14 +13,14 @@ export function middleware(request: NextRequest) {
 
   if (isProtectedRoute && !accessToken) {
     const url = request.nextUrl.clone();
-    url.pathname = "/login";
+    url.pathname = "/app/login";
     url.searchParams.set("next", pathname);
     return NextResponse.redirect(url);
   }
 
   if (isAuthRoute && accessToken) {
     const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
+    url.pathname = "/app/dashboard";
     return NextResponse.redirect(url);
   }
 
@@ -28,5 +28,11 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/account/:path*", "/login", "/register"]
+  matcher: [
+    "/app/dashboard/:path*",
+    "/app/account/:path*",
+    "/app/onboarding/:path*",
+    "/app/login",
+    "/app/register"
+  ]
 };

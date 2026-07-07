@@ -27,7 +27,13 @@ export const resetPasswordSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters")
 });
 
+export const companyOnboardingSchema = z.object({
+  legal_name: z.string().trim().min(1, "Legal company name is required").max(160),
+  trade_name: z.string().trim().max(160).optional().or(z.literal(""))
+});
+
 export type LoginValues = z.infer<typeof loginSchema>;
 export type RegisterValues = z.infer<typeof registerSchema>;
 export type ForgotPasswordValues = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
+export type CompanyOnboardingValues = z.infer<typeof companyOnboardingSchema>;

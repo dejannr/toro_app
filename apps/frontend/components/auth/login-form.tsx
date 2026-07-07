@@ -24,7 +24,7 @@ export function LoginForm() {
     setError(null);
     try {
       await login(values);
-      router.push("/dashboard");
+      router.push("/app/dashboard");
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to log in");
@@ -72,13 +72,13 @@ export function LoginForm() {
       <div className="flex items-center justify-between text-sm text-muted-foreground">
         <Link
           className="text-[#161616] underline-offset-4 hover:underline"
-          href="/register"
+          href="/app/register"
         >
           Register
         </Link>
         <Link
           className="text-[#161616] underline-offset-4 hover:underline"
-          href="/forgot-password"
+          href="/app/forgot-password"
         >
           Forgot password
         </Link>

@@ -12,27 +12,37 @@ from app.core.security import create_access_token, create_refresh_token, decode_
 from app.db.session import get_db_session
 from app.models.user import User
 from app.schemas.auth import (
+    CompanySummary,
+    FakeEmailPreview,
     ForgotPasswordRequest,
     LoginRequest,
     MessageResponse,
     RegisterRequest,
+    RegisterResponse,
     ResetPasswordRequest,
     UserRead,
+    VerifyEmailRequest,
+    VerifyEmailResponse,
 )
 from app.services.auth_service import (
     authenticate_user,
+    consume_email_verification_token,
     consume_password_reset_token,
+    create_email_verification_token,
     create_password_reset_token,
     create_user,
     get_user_by_email,
     get_user_by_id,
     update_password,
+    verify_user_email,
 )
+from app.services.company_service import get_primary_membership, get_user_with_company
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 def user_to_read(user: User) -> UserRead:
+    membership = get_primary_membership(user)
     return UserRead(
         id=str(user.id),
         first_name=user.first_name,
@@ -40,6 +50,15 @@ def user_to_read(user: User) -> UserRead:
         email=user.email,
         is_active=user.is_active,
         is_verified=user.is_verified,
+        company=(
+            CompanySummary(
+                id=str(membership.company.id),
+                legal_name=membership.company.legal_name,
+                role=membership.role,
+            )
+            if membership is not None and membership.company is not None
+            else None
+        ),
     )
 
 
@@ -79,18 +98,23 @@ def clear_auth_cookies(response: Response) -> None:
         )
 
 
-@router.post("/register", response_model=UserRead, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/register",
+    response_model=RegisterResponse,
+    status_code=status.HTTP_201_CREATED,
+)
 async def register(
     payload: RegisterRequest,
-    response: Response,
+    redis: Redis = Depends(get_redis),
     session: AsyncSession = Depends(get_db_session),
-) -> UserRead:
+) -> RegisterResponse:
     existing_user = await get_user_by_email(session, payload.email)
     if existing_user is not None:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="An account with this email already exists",
         )
+
     user = await create_user(
         session,
         payload.first_name,
@@ -98,8 +122,52 @@ async def register(
         payload.email,
         payload.password,
     )
-    set_auth_cookies(response, user)
-    return user_to_read(user)
+    token = await create_email_verification_token(redis, user)
+    settings = get_settings()
+    verify_url = (
+        f"{str(settings.frontend_url).rstrip('/')}/app/verify-email?token={token}"
+    )
+    return RegisterResponse(
+        message="Account created. Confirm your email to continue to onboarding.",
+        fake_email=FakeEmailPreview(
+            to=user.email,
+            subject="Confirm your Toro account",
+            verify_url=verify_url,
+        ),
+    )
+
+
+@router.post("/verify-email", response_model=VerifyEmailResponse)
+async def verify_email(
+    payload: VerifyEmailRequest,
+    response: Response,
+    redis: Redis = Depends(get_redis),
+    session: AsyncSession = Depends(get_db_session),
+) -> VerifyEmailResponse:
+    user_id = await consume_email_verification_token(redis, payload.token)
+    if user_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired verification token",
+        )
+
+    user = await get_user_by_id(session, UUID(user_id))
+    if user is None or not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired verification token",
+        )
+
+    if not user.is_verified:
+        await verify_user_email(session, user)
+
+    hydrated_user = await get_user_with_company(session, user.id) or user
+    set_auth_cookies(response, hydrated_user)
+    return VerifyEmailResponse(
+        message="Email verified",
+        onboarding_path="/app/onboarding",
+        user=user_to_read(hydrated_user),
+    )
 
 
 @router.post("/login", response_model=UserRead)
@@ -114,8 +182,15 @@ async def login(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
         )
-    set_auth_cookies(response, user)
-    return user_to_read(user)
+    if not user.is_verified:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Confirm your email before logging in",
+        )
+
+    hydrated_user = await get_user_with_company(session, user.id) or user
+    set_auth_cookies(response, hydrated_user)
+    return user_to_read(hydrated_user)
 
 
 @router.post("/logout", response_model=MessageResponse)
@@ -149,7 +224,9 @@ async def refresh(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Inactive or missing user",
         )
-    set_auth_cookies(response, user)
+
+    hydrated_user = await get_user_with_company(session, user.id) or user
+    set_auth_cookies(response, hydrated_user)
     return MessageResponse(message="Token refreshed")
 
 
@@ -190,5 +267,9 @@ async def reset_password(
 
 
 @router.get("/me", response_model=UserRead)
-async def me(user: User = Depends(get_current_user)) -> UserRead:
-    return user_to_read(user)
+async def me(
+    user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db_session),
+) -> UserRead:
+    hydrated_user = await get_user_with_company(session, user.id) or user
+    return user_to_read(hydrated_user)

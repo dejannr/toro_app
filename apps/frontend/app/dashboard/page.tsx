@@ -1,9 +1,5 @@
-import { AppShell } from "@/components/layout/app-shell";
+import { redirect } from "next/navigation";
 
-export default function DashboardPage() {
-  return (
-    <AppShell>
-      <section className="min-h-[50vh]" aria-label="Dashboard" />
-    </AppShell>
-  );
+export default function LegacyDashboardPage() {
+  redirect("/app/dashboard");
 }

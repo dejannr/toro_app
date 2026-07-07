@@ -9,23 +9,27 @@ type AppShellProps = {
 
 export function AppShell({ children }: AppShellProps) {
   return (
-    <main className="min-h-screen bg-background text-foreground">
-      <header className="border-b border-border">
-        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-          <Link href="/" className="text-sm font-semibold">
-            App
+    <main className="min-h-screen bg-[#FFFCF5] text-foreground">
+      <header className="border-b border-[#EFE7D4] bg-white/90 backdrop-blur">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
+          <Link href="/app/dashboard" className="text-sm font-semibold text-[#161616]">
+            Toro
           </Link>
           <nav className="flex items-center gap-2">
             <Button asChild variant="outline" size="sm">
-              <Link href="/account">Account</Link>
+              <Link href="/app/account">Account</Link>
             </Button>
-            <Button asChild size="sm">
-              <Link href="/dashboard">Dashboard</Link>
+            <Button
+              asChild
+              size="sm"
+              className="bg-[#161616] text-white hover:bg-[#161616]/90"
+            >
+              <Link href="/app/dashboard">Dashboard</Link>
             </Button>
           </nav>
         </div>
       </header>
-      <div className="mx-auto max-w-5xl px-4 py-8">{children}</div>
+      <div className="mx-auto max-w-6xl px-4 py-10">{children}</div>
     </main>
   );
 }

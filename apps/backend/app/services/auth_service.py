@@ -9,6 +9,7 @@ from app.core.security import hash_password, verify_password
 from app.models.user import User
 
 RESET_TOKEN_EXPIRE_SECONDS = 60 * 60
+EMAIL_VERIFICATION_EXPIRE_SECONDS = 60 * 60 * 24
 
 
 async def get_user_by_email(session: AsyncSession, email: str) -> User | None:
@@ -54,6 +55,10 @@ def hash_reset_token(token: str) -> str:
     return sha256(token.encode("utf-8")).hexdigest()
 
 
+def hash_email_verification_token(token: str) -> str:
+    return sha256(token.encode("utf-8")).hexdigest()
+
+
 async def create_password_reset_token(redis: Redis, user: User) -> str:
     token = token_urlsafe(32)
     token_hash = hash_reset_token(token)
@@ -66,6 +71,17 @@ async def create_password_reset_token(redis: Redis, user: User) -> str:
     return token
 
 
+async def create_email_verification_token(redis: Redis, user: User) -> str:
+    token = token_urlsafe(32)
+    token_hash = hash_email_verification_token(token)
+    await redis.setex(
+        f"email-verify:{token_hash}",
+        EMAIL_VERIFICATION_EXPIRE_SECONDS,
+        str(user.id),
+    )
+    return token
+
+
 async def consume_password_reset_token(redis: Redis, token: str) -> str | None:
     token_hash = hash_reset_token(token)
     key = f"password-reset:{token_hash}"
@@ -75,6 +91,17 @@ async def consume_password_reset_token(redis: Redis, token: str) -> str | None:
     return user_id
 
 
+async def consume_email_verification_token(redis: Redis, token: str) -> str | None:
+    token_hash = hash_email_verification_token(token)
+    key = f"email-verify:{token_hash}"
+    return await redis.get(key)
+
+
 async def update_password(session: AsyncSession, user: User, password: str) -> None:
     user.hashed_password = hash_password(password)
+    await session.commit()
+
+
+async def verify_user_email(session: AsyncSession, user: User) -> None:
+    user.is_verified = True
     await session.commit()
