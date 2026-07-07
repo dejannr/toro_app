@@ -29,6 +29,22 @@ usage() {
   printf "Press Ctrl+C to stop both processes.\n"
 }
 
+find_pg_tool() {
+  local tool="$1"
+  if command -v "$tool" >/dev/null 2>&1; then
+    command -v "$tool"
+    return 0
+  fi
+
+  local libpq_tool="/opt/homebrew/opt/libpq/bin/$tool"
+  if [ -x "$libpq_tool" ]; then
+    printf "%s\n" "$libpq_tool"
+    return 0
+  fi
+
+  return 1
+}
+
 setup_local() {
   printf "Installing frontend dependencies...\n"
   (cd "$FRONTEND_DIR" && npm install)
@@ -48,6 +64,103 @@ ensure_dependencies() {
     printf "Frontend dependencies are missing. Run ./run.sh setup first.\n" >&2
     exit 1
   fi
+}
+
+ensure_database() {
+  case "$DATABASE_URL" in
+    postgresql+asyncpg://*|postgresql://*) ;;
+    *)
+      printf "Skipping automatic database setup for unsupported DATABASE_URL.\n"
+      return 0
+      ;;
+  esac
+
+  local psql_bin
+  local createdb_bin
+  local pg_isready_bin
+  psql_bin="$(find_pg_tool psql)" || {
+    printf "psql is required for automatic database setup.\n" >&2
+    exit 1
+  }
+  createdb_bin="$(find_pg_tool createdb)" || {
+    printf "createdb is required for automatic database setup.\n" >&2
+    exit 1
+  }
+  pg_isready_bin="$(find_pg_tool pg_isready)" || {
+    printf "pg_isready is required for automatic database setup.\n" >&2
+    exit 1
+  }
+
+  local db_url="${DATABASE_URL#postgresql+asyncpg://}"
+  db_url="${db_url#postgresql://}"
+
+  local authority="${db_url%%/*}"
+  local db_name="${db_url#*/}"
+  db_name="${db_name%%\?*}"
+
+  local auth=""
+  local hostport="$authority"
+  if [[ "$authority" == *"@"* ]]; then
+    auth="${authority%@*}"
+    hostport="${authority#*@}"
+  fi
+
+  local db_user="${auth%%:*}"
+  local db_pass=""
+  if [[ -n "$auth" && "$auth" == *:* ]]; then
+    db_pass="${auth#*:}"
+  fi
+
+  local db_host="${hostport%%:*}"
+  local db_port="5432"
+  if [[ "$hostport" == *:* ]]; then
+    db_port="${hostport##*:}"
+  fi
+
+  if [[ -z "$db_host" ]]; then
+    db_host="localhost"
+  fi
+
+  if [[ -z "$db_user" ]]; then
+    db_user="$USER"
+  fi
+
+  if ! PGPASSWORD="$db_pass" "$pg_isready_bin" -h "$db_host" -p "$db_port" -U "$db_user" -d postgres >/dev/null 2>&1; then
+    printf "Postgres is not ready at %s:%s for user %s.\n" "$db_host" "$db_port" "$db_user" >&2
+    exit 1
+  fi
+
+  local db_exists
+  db_exists="$(
+    PGPASSWORD="$db_pass" "$psql_bin" \
+      -h "$db_host" \
+      -p "$db_port" \
+      -U "$db_user" \
+      -d postgres \
+      -tAc "SELECT 1 FROM pg_database WHERE datname='$db_name'"
+  )"
+
+  if [[ "$db_exists" != "1" ]]; then
+    printf "Creating database %s...\n" "$db_name"
+    PGPASSWORD="$db_pass" "$createdb_bin" \
+      -h "$db_host" \
+      -p "$db_port" \
+      -U "$db_user" \
+      "$db_name"
+  fi
+
+  printf "Running database migrations...\n"
+  (
+    cd "$BACKEND_DIR"
+    DATABASE_URL="$DATABASE_URL" \
+    REDIS_URL="$REDIS_URL" \
+    JWT_SECRET_KEY="$JWT_SECRET_KEY" \
+    COOKIE_SECURE="$COOKIE_SECURE" \
+    COOKIE_SAMESITE="$COOKIE_SAMESITE" \
+    FRONTEND_URL="$FRONTEND_URL" \
+    BACKEND_URL="$BACKEND_URL" \
+    .venv/bin/alembic upgrade head
+  )
 }
 
 stop_processes() {
@@ -73,6 +186,7 @@ stop_processes() {
 
 run_app() {
   ensure_dependencies
+  ensure_database
 
   trap stop_processes INT TERM EXIT
 

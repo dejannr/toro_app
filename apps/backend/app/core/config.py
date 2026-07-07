@@ -1,4 +1,5 @@
 from functools import lru_cache
+from urllib.parse import urlsplit
 
 from pydantic import AnyHttpUrl, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -29,6 +30,33 @@ class Settings(BaseSettings):
     )
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
+    @property
+    def cors_allowed_origins(self) -> list[str]:
+        frontend_origin = _normalize_origin(str(self.frontend_url))
+        origins = {frontend_origin}
+
+        parsed = urlsplit(frontend_origin)
+        if parsed.hostname == "localhost":
+            origins.add(
+                _normalize_origin(
+                    f"{parsed.scheme}://127.0.0.1"
+                    f"{f':{parsed.port}' if parsed.port else ''}",
+                )
+            )
+        elif parsed.hostname == "127.0.0.1":
+            origins.add(
+                _normalize_origin(
+                    f"{parsed.scheme}://localhost"
+                    f"{f':{parsed.port}' if parsed.port else ''}",
+                )
+            )
+
+        return sorted(origins)
+
+
+def _normalize_origin(url: str) -> str:
+    return url.rstrip("/")
 
 
 @lru_cache
