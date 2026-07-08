@@ -11,7 +11,7 @@ const features = [
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-[#FFFCF5] text-[#161616]">
+    <main className="min-h-screen bg-white text-[#161616]">
       <header className="border-b border-[#EFE7D4] bg-white/90">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
           <Link href="/" className="flex items-center">
