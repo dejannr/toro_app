@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,17 @@ import {
   type CompanyOnboardingValues
 } from "@/lib/validations/auth";
 
-export function CompanyOnboardingForm() {
+type CompanyOnboardingFormProps = {
+  submitLabel?: string;
+  cancelAction?: ReactNode;
+  onSuccess?: () => void;
+};
+
+export function CompanyOnboardingForm({
+  submitLabel = "Continue to dashboard",
+  cancelAction,
+  onSuccess
+}: CompanyOnboardingFormProps) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const form = useForm<CompanyOnboardingValues>({
@@ -29,6 +39,7 @@ export function CompanyOnboardingForm() {
     setError(null);
     try {
       await createCompanyOnboarding(values);
+      onSuccess?.();
       router.push("/app/dashboard");
       router.refresh();
     } catch (err) {
@@ -65,12 +76,13 @@ export function CompanyOnboardingForm() {
         ) : null}
       </div>
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
+      {cancelAction}
       <Button
         className="w-full bg-[#161616] text-white hover:bg-[#161616]/90"
         type="submit"
         disabled={form.formState.isSubmitting}
       >
-        Continue to dashboard
+        {submitLabel}
       </Button>
     </form>
   );

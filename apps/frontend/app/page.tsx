@@ -14,7 +14,16 @@ export default function HomePage() {
     <main className="min-h-screen bg-[#FFFCF5] text-[#161616]">
       <header className="border-b border-[#EFE7D4] bg-white/90">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-          <span className="text-sm font-semibold">Toro</span>
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/logo-black.png"
+              alt="Toro"
+              width={120}
+              height={39}
+              priority
+              className="h-auto w-[120px]"
+            />
+          </Link>
           <div className="flex items-center gap-3">
             <Link
               className="text-sm text-muted-foreground transition-colors hover:text-[#161616]"

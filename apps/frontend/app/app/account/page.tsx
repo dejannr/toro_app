@@ -7,9 +7,10 @@ import { getCurrentUser } from "@/lib/auth";
 export default async function AccountPage() {
   const cookieHeader = (await cookies()).toString();
   const user = await getCurrentUser(cookieHeader);
+  const hasAccessToken = cookieHeader.includes("access_token=");
 
   if (user === null) {
-    redirect("/app/login");
+    redirect(hasAccessToken ? "/app/logout" : "/app/login");
   }
 
   return (

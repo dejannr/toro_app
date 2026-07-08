@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
@@ -12,8 +13,15 @@ export function AppShell({ children }: AppShellProps) {
     <main className="min-h-screen bg-[#FFFCF5] text-foreground">
       <header className="border-b border-[#EFE7D4] bg-white/90 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-          <Link href="/app/dashboard" className="text-sm font-semibold text-[#161616]">
-            Toro
+          <Link href="/app/dashboard" className="flex items-center">
+            <Image
+              src="/logo-black.png"
+              alt="Toro"
+              width={120}
+              height={39}
+              priority
+              className="h-auto w-[120px]"
+            />
           </Link>
           <nav className="flex items-center gap-2">
             <Button asChild variant="outline" size="sm">
