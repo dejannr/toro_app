@@ -14,7 +14,7 @@ export default async function AccountPage() {
   }
 
   return (
-    <AppShell>
+    <AppShell user={user}>
       <section className="space-y-2">
         <h1 className="text-xl font-semibold">Account</h1>
         <p className="text-sm text-foreground">

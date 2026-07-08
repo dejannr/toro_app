@@ -15,7 +15,7 @@ export default async function DashboardPage() {
   }
 
   return (
-    <AppShell>
+    <AppShell user={user}>
       {user.company ? (
         <section className="space-y-3">
           <h1 className="text-2xl font-semibold text-foreground">
