@@ -21,7 +21,7 @@ export function CompanySetupPanel() {
           </p>
         </div>
         <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-3xl border border-[#EAEAEA] bg-[#FAFAFA] p-6">
+          <div className="rounded-2xl border border-[#EAEAEA] bg-[#FAFAFA] p-6">
             <p className="text-sm font-medium text-foreground">
               Create a company
             </p>
@@ -35,7 +35,7 @@ export function CompanySetupPanel() {
               Create workspace
             </Button>
           </div>
-          <div className="rounded-3xl border border-[#EAEAEA] bg-[#FAFAFA] p-6">
+          <div className="rounded-2xl border border-[#EAEAEA] bg-[#FAFAFA] p-6">
             <p className="text-sm font-medium text-foreground">Join later</p>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
               Keep your personal account ready and join an existing company when

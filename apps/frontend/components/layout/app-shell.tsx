@@ -38,7 +38,7 @@ export function AppShell({ children, user }: AppShellProps) {
     : "NC";
 
   return (
-    <main className="min-h-screen bg-white text-foreground lg:flex">
+    <main className="min-h-screen bg-[#161616] text-foreground lg:flex">
       <aside className="flex w-full flex-col bg-[#161616] px-3 py-5 lg:min-h-screen lg:w-[248px] lg:px-3">
         <Link href="/app/dashboard" className="flex items-center px-1 py-3">
           <Image
@@ -61,7 +61,7 @@ export function AppShell({ children, user }: AppShellProps) {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "rounded-xl border border-transparent px-4 py-3 text-sm font-medium transition-colors",
+                  "rounded-[10px] border border-transparent px-4 py-3 text-sm font-medium transition-colors",
                   "text-white hover:bg-[#222222] hover:text-[#FFD028] active:border-[#313131] active:bg-[#222222] active:text-[#FFD028]",
                   isActive && "border-[#313131] bg-[#222222] text-[#FFD028]"
                 )}
@@ -116,8 +116,10 @@ export function AppShell({ children, user }: AppShellProps) {
         </div>
       </aside>
 
-      <div className="min-w-0 flex-1">
-        <div className="mx-auto max-w-6xl px-4 py-10">{children}</div>
+      <div className="min-w-0 flex-1 p-3 pt-0 lg:py-3 lg:pr-3 lg:pl-0">
+        <div className="min-h-full rounded-[28px] bg-white">
+          <div className="mx-auto max-w-6xl px-4 py-10">{children}</div>
+        </div>
       </div>
     </main>
   );
