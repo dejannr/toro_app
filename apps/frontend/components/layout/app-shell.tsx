@@ -1,6 +1,12 @@
 "use client";
 
-import { HomeLine, LogOut01, User01 } from "@untitledui/icons";
+import {
+  HomeLine,
+  LogOut01,
+  SlashCircle01,
+  User01,
+  User03
+} from "@untitledui/icons";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -20,20 +26,28 @@ export function AppShell({ children, user }: AppShellProps) {
     { href: "/app/dashboard", label: "Dashboard", icon: HomeLine },
     { href: "/app/account", label: "Account", icon: User01 }
   ];
-  const initials = `${user.first_name[0] ?? ""}${user.last_name[0] ?? ""}`.toUpperCase();
   const subtitle = user.company?.legal_name ?? user.email;
+  const companyName = user.company?.legal_name ?? "No company";
+  const companyInitials = user.company?.legal_name
+    ? user.company.legal_name
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((part) => part[0]?.toUpperCase() ?? "")
+        .join("")
+    : "NC";
 
   return (
     <main className="min-h-screen bg-white text-foreground lg:flex">
       <aside className="flex w-full flex-col bg-[#161616] px-3 py-5 lg:min-h-screen lg:w-[248px] lg:px-3">
         <Link href="/app/dashboard" className="flex items-center px-1 py-3">
           <Image
-            src="/logo-y.png"
+            src="/logo-white.png"
             alt="Toro"
-            width={120}
-            height={39}
+            width={108}
+            height={35}
             priority
-            className="h-auto w-[120px]"
+            className="h-auto w-[108px]"
           />
         </Link>
 
@@ -61,11 +75,28 @@ export function AppShell({ children, user }: AppShellProps) {
           })}
         </nav>
 
-        <div className="mt-6 lg:mt-auto">
+        <div className="mt-6 space-y-3 lg:mt-auto">
           <div className="rounded-2xl border border-[#2E2E2E] bg-[#222222] p-2.5">
             <div className="flex items-center gap-3">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-sm font-semibold text-[#161616]">
-                {initials}
+                {user.company ? (
+                  companyInitials
+                ) : (
+                  <SlashCircle01 className="h-6 w-6 text-[#545454]" />
+                )}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium text-white">{companyName}</p>
+                <p className="truncate text-xs text-[#8E8E8E]">
+                  {user.company ? "Company" : "No company"}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="rounded-2xl border border-[#2E2E2E] bg-[#222222] p-2.5">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-sm font-semibold text-[#161616]">
+                <User03 className="h-6 w-6 text-[#545454]" />
               </div>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium text-white">
