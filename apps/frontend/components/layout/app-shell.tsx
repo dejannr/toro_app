@@ -125,7 +125,7 @@ export function AppShell({ children, user }: AppShellProps) {
 
       <div className="min-w-0 flex-1 p-3 pt-0 lg:py-3 lg:pr-3 lg:pl-0">
         <div className="min-h-full rounded-[28px] bg-white">
-          <div className="mx-auto max-w-6xl px-4 py-10">{children}</div>
+          <div className="px-4 py-6 lg:px-6 lg:py-7">{children}</div>
         </div>
       </div>
     </main>
