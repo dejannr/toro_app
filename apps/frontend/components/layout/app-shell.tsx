@@ -1,8 +1,11 @@
 "use client";
 
 import {
+  Building05,
+  File06,
   HomeLine,
   LogOut01,
+  PlusSquare,
   SlashCircle01,
   User01,
   User03
@@ -24,6 +27,9 @@ export function AppShell({ children, user }: AppShellProps) {
   const pathname = usePathname();
   const navItems = [
     { href: "/app/dashboard", label: "Dashboard", icon: HomeLine },
+    { href: "/app/invoices", label: "Invoices", icon: File06 },
+    { href: "/app/create-invoice", label: "Create Invoice", icon: PlusSquare },
+    { href: "/app/company", label: "Company", icon: Building05 },
     { href: "/app/account", label: "Account", icon: User01 }
   ];
   const subtitle = user.company?.legal_name ?? user.email;
@@ -53,7 +59,8 @@ export function AppShell({ children, user }: AppShellProps) {
 
         <nav className="mt-6 flex flex-col gap-1">
           {navItems.map((item) => {
-            const isActive = pathname === item.href;
+            const isActive =
+              pathname === item.href || pathname.startsWith(`${item.href}/`);
             const Icon = item.icon;
 
             return (

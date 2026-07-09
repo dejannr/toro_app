@@ -16,18 +16,22 @@ export class ApiRequestError extends Error {
   }
 }
 
+export function getApiBaseUrl() {
+  return typeof window === "undefined" ? serverBackendUrl : publicBackendUrl;
+}
+
 export async function apiFetch<T>(
   path: string,
   init: RequestInit = {}
 ): Promise<T> {
-  const isServer = typeof window === "undefined";
-  const baseUrl = isServer ? serverBackendUrl : publicBackendUrl;
-  const response = await fetch(`${baseUrl}${path}`, {
+  const body = init.body;
+  const isFormData = typeof FormData !== "undefined" && body instanceof FormData;
+  const response = await fetch(`${getApiBaseUrl()}${path}`, {
     ...init,
     cache: init.cache ?? "no-store",
     credentials: "include",
     headers: {
-      "Content-Type": "application/json",
+      ...(isFormData ? {} : { "Content-Type": "application/json" }),
       ...init.headers
     }
   });

@@ -1,10 +1,6 @@
 from pydantic import AnyHttpUrl, BaseModel, EmailStr, Field
 
-
-class CompanySummary(BaseModel):
-    id: str
-    legal_name: str
-    role: str
+from app.schemas.company import CompanySummary
 
 
 class UserRead(BaseModel):
@@ -57,11 +53,6 @@ class ForgotPasswordRequest(BaseModel):
 class ResetPasswordRequest(BaseModel):
     token: str = Field(min_length=16)
     password: str = Field(min_length=8)
-
-
-class CompanyOnboardingRequest(BaseModel):
-    legal_name: str = Field(min_length=1, max_length=160)
-    trade_name: str | None = Field(default=None, max_length=160)
 
 
 class MessageResponse(BaseModel):

@@ -1,6 +1,13 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-const protectedRoutes = ["/app/dashboard", "/app/account", "/app/onboarding"];
+const protectedRoutes = [
+  "/app/dashboard",
+  "/app/invoices",
+  "/app/create-invoice",
+  "/app/company",
+  "/app/account",
+  "/app/onboarding"
+];
 const authRoutes = ["/app/login", "/app/register"];
 
 export function middleware(request: NextRequest) {
@@ -30,6 +37,9 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/app/dashboard/:path*",
+    "/app/invoices/:path*",
+    "/app/create-invoice/:path*",
+    "/app/company/:path*",
     "/app/account/:path*",
     "/app/onboarding/:path*",
     "/app/login",
