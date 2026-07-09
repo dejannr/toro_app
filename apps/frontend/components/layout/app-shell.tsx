@@ -44,8 +44,8 @@ export function AppShell({ children, user }: AppShellProps) {
     : "NC";
 
   return (
-    <main className="min-h-screen bg-[#161616] text-foreground lg:flex">
-      <aside className="flex w-full flex-col bg-[#161616] px-3 py-5 lg:min-h-screen lg:w-[248px] lg:px-3">
+    <main className="h-screen overflow-hidden bg-[#161616] text-foreground">
+      <aside className="fixed inset-x-0 top-0 z-20 flex w-full flex-col bg-[#161616] px-3 py-5 lg:inset-y-0 lg:left-0 lg:right-auto lg:w-[248px] lg:px-3">
         <Link href="/app/dashboard" className="flex items-center px-1 py-3">
           <Image
             src="/logo-white.png"
@@ -123,9 +123,11 @@ export function AppShell({ children, user }: AppShellProps) {
         </div>
       </aside>
 
-      <div className="min-w-0 flex-1 p-3 pt-0 lg:py-3 lg:pr-3 lg:pl-0">
-        <div className="min-h-full rounded-[28px] bg-white">
-          <div className="px-4 py-6 lg:px-6 lg:py-7">{children}</div>
+      <div className="h-screen overflow-y-auto pt-[264px] lg:ml-[248px] lg:pt-0">
+        <div className="min-h-screen p-3 pt-0 lg:flex lg:min-h-screen lg:flex-col lg:py-3 lg:pr-3 lg:pl-0">
+          <div className="min-h-[calc(100vh-264px)] rounded-[28px] bg-white lg:flex-1 lg:min-h-0">
+            <div className="px-4 py-6 lg:px-6 lg:py-7">{children}</div>
+          </div>
         </div>
       </div>
     </main>

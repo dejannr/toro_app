@@ -17,11 +17,22 @@ class CompanyInformation(BaseModel):
     legal_name: str
     trade_name: str | None = None
     billing_email: EmailStr | None = None
+    phone_number: str | None = None
+    website: str | None = None
+    dot_number: str | None = None
+    mc_number: str | None = None
+    ein_number: str | None = None
     address_line1: str | None = None
     address_line2: str | None = None
     city: str | None = None
     state: str | None = None
     postal_code: str | None = None
+    remittance_name: str | None = None
+    remittance_address_line1: str | None = None
+    remittance_address_line2: str | None = None
+    remittance_city: str | None = None
+    remittance_state: str | None = None
+    remittance_postal_code: str | None = None
     invoice_prefix: str
     payment_terms_label: str
     payment_terms_days: int
@@ -31,11 +42,22 @@ class CompanyUpdateRequest(BaseModel):
     legal_name: str = Field(min_length=1, max_length=160)
     trade_name: str | None = Field(default=None, max_length=160)
     billing_email: EmailStr | None = None
+    phone_number: str | None = Field(default=None, max_length=40)
+    website: str | None = Field(default=None, max_length=160)
+    dot_number: str | None = Field(default=None, max_length=40)
+    mc_number: str | None = Field(default=None, max_length=40)
+    ein_number: str | None = Field(default=None, max_length=40)
     address_line1: str | None = Field(default=None, max_length=160)
     address_line2: str | None = Field(default=None, max_length=160)
     city: str | None = Field(default=None, max_length=120)
     state: str | None = Field(default=None, max_length=120)
     postal_code: str | None = Field(default=None, max_length=40)
+    remittance_name: str | None = Field(default=None, max_length=160)
+    remittance_address_line1: str | None = Field(default=None, max_length=160)
+    remittance_address_line2: str | None = Field(default=None, max_length=160)
+    remittance_city: str | None = Field(default=None, max_length=120)
+    remittance_state: str | None = Field(default=None, max_length=120)
+    remittance_postal_code: str | None = Field(default=None, max_length=40)
     invoice_prefix: str = Field(min_length=1, max_length=20)
     payment_terms_label: str = Field(min_length=1, max_length=80)
     payment_terms_days: int = Field(ge=0, le=180)

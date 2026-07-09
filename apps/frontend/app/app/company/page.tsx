@@ -1,4 +1,4 @@
-import { CompanyOnboardingForm } from "@/components/auth/company-onboarding-form";
+import { CompanyEmptyState } from "@/components/company/company-empty-state";
 import { CompanySettingsView } from "@/components/company/company-settings-view";
 import { AppShell } from "@/components/layout/app-shell";
 import { getCompanyMembers, getCurrentCompany } from "@/lib/company";
@@ -10,17 +10,7 @@ export default async function CompanyPage() {
   if (!user.company) {
     return (
       <AppShell user={user}>
-        <section className="max-w-xl space-y-6">
-          <div className="space-y-2">
-            <h1 className="text-2xl font-semibold text-[#161616]">Company</h1>
-            <p className="text-sm leading-7 text-muted-foreground">
-              Create your company workspace now, or come back here later.
-            </p>
-          </div>
-          <div className="rounded-2xl border border-[#EAEAEA] bg-[#FAFAFA] p-6">
-            <CompanyOnboardingForm submitLabel="Create workspace" />
-          </div>
-        </section>
+        <CompanyEmptyState />
       </AppShell>
     );
   }

@@ -12,6 +12,8 @@ export type CurrentUser = {
   first_name: string;
   last_name: string;
   email: string;
+  phone_number: string | null;
+  job_title: string | null;
   is_active: boolean;
   is_verified: boolean;
   company: {
@@ -19,6 +21,37 @@ export type CurrentUser = {
     legal_name: string;
     role: string;
   } | null;
+};
+
+export type NotificationPreferences = {
+  fuel_management_enabled: boolean;
+  marketplace_enabled: boolean;
+  tracking: {
+    predicted_late: boolean;
+    arrival: boolean;
+    detention_alert: boolean;
+    departure: boolean;
+    load_complete: boolean;
+    receive_attachments: boolean;
+    only_my_loads: boolean;
+    channels: {
+      desktop: boolean;
+      email: boolean;
+      sms: boolean;
+    };
+  };
+  other_enabled: boolean;
+};
+
+export type AccountProfile = {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone_number: string | null;
+  job_title: string | null;
+  company: CurrentUser["company"];
+  notification_preferences: NotificationPreferences;
 };
 
 type RegisterPayload = Omit<RegisterValues, "confirmPassword">;
@@ -108,4 +141,40 @@ export function createCompanyOnboarding(
       })
     }
   );
+}
+
+export function getAccountProfile(cookieHeader?: string) {
+  return apiFetch<AccountProfile>("/auth/account", {
+    method: "GET",
+    headers: cookieHeader ? { Cookie: cookieHeader } : undefined
+  });
+}
+
+export function updateAccountProfile(values: {
+  first_name: string;
+  last_name: string;
+  phone_number: string | null;
+  job_title: string | null;
+}) {
+  return apiFetch<AccountProfile>("/auth/account", {
+    method: "PATCH",
+    body: JSON.stringify(values)
+  });
+}
+
+export function changeAccountPassword(values: {
+  current_password: string;
+  new_password: string;
+}) {
+  return apiFetch<{ message: string }>("/auth/account/password", {
+    method: "PATCH",
+    body: JSON.stringify(values)
+  });
+}
+
+export function updateNotificationPreferences(notification_preferences: NotificationPreferences) {
+  return apiFetch<AccountProfile>("/auth/account/notifications", {
+    method: "PATCH",
+    body: JSON.stringify({ notification_preferences })
+  });
 }

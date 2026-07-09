@@ -105,3 +105,56 @@ async def update_password(session: AsyncSession, user: User, password: str) -> N
 async def verify_user_email(session: AsyncSession, user: User) -> None:
     user.is_verified = True
     await session.commit()
+
+
+def default_notification_preferences() -> dict:
+    return {
+        "fuel_management_enabled": False,
+        "marketplace_enabled": False,
+        "tracking": {
+            "predicted_late": True,
+            "arrival": True,
+            "detention_alert": False,
+            "departure": True,
+            "load_complete": False,
+            "receive_attachments": False,
+            "only_my_loads": True,
+            "channels": {
+                "desktop": True,
+                "email": True,
+                "sms": False,
+            },
+        },
+        "other_enabled": False,
+    }
+
+
+async def update_user_profile(
+    session: AsyncSession,
+    user: User,
+    *,
+    first_name: str,
+    last_name: str,
+    phone_number: str | None,
+    job_title: str | None,
+) -> User:
+    user.first_name = first_name.strip()
+    user.last_name = last_name.strip()
+    user.phone_number = phone_number.strip() if phone_number else None
+    user.job_title = job_title.strip() if job_title else None
+    session.add(user)
+    await session.commit()
+    await session.refresh(user)
+    return user
+
+
+async def update_notification_preferences(
+    session: AsyncSession,
+    user: User,
+    notification_preferences: dict,
+) -> User:
+    user.notification_preferences = notification_preferences
+    session.add(user)
+    await session.commit()
+    await session.refresh(user)
+    return user

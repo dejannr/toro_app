@@ -70,11 +70,22 @@ async def update_company(
     legal_name: str,
     trade_name: str | None,
     billing_email: str | None,
+    phone_number: str | None,
+    website: str | None,
+    dot_number: str | None,
+    mc_number: str | None,
+    ein_number: str | None,
     address_line1: str | None,
     address_line2: str | None,
     city: str | None,
     state: str | None,
     postal_code: str | None,
+    remittance_name: str | None,
+    remittance_address_line1: str | None,
+    remittance_address_line2: str | None,
+    remittance_city: str | None,
+    remittance_state: str | None,
+    remittance_postal_code: str | None,
     invoice_prefix: str,
     payment_terms_label: str,
     payment_terms_days: int,
@@ -82,11 +93,28 @@ async def update_company(
     company.legal_name = legal_name.strip()
     company.trade_name = trade_name.strip() if trade_name else None
     company.billing_email = billing_email.strip() if billing_email else None
+    company.phone_number = phone_number.strip() if phone_number else None
+    company.website = website.strip() if website else None
+    company.dot_number = dot_number.strip() if dot_number else None
+    company.mc_number = mc_number.strip() if mc_number else None
+    company.ein_number = ein_number.strip() if ein_number else None
     company.address_line1 = address_line1.strip() if address_line1 else None
     company.address_line2 = address_line2.strip() if address_line2 else None
     company.city = city.strip() if city else None
     company.state = state.strip() if state else None
     company.postal_code = postal_code.strip() if postal_code else None
+    company.remittance_name = remittance_name.strip() if remittance_name else None
+    company.remittance_address_line1 = (
+        remittance_address_line1.strip() if remittance_address_line1 else None
+    )
+    company.remittance_address_line2 = (
+        remittance_address_line2.strip() if remittance_address_line2 else None
+    )
+    company.remittance_city = remittance_city.strip() if remittance_city else None
+    company.remittance_state = remittance_state.strip() if remittance_state else None
+    company.remittance_postal_code = (
+        remittance_postal_code.strip() if remittance_postal_code else None
+    )
     company.invoice_prefix = invoice_prefix.strip()
     company.payment_terms_label = payment_terms_label.strip()
     company.payment_terms_days = payment_terms_days

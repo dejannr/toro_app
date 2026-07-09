@@ -11,6 +11,12 @@ from app.core.redis import get_redis
 from app.core.security import create_access_token, create_refresh_token, decode_token
 from app.db.session import get_db_session
 from app.models.user import User
+from app.schemas.account import (
+    AccountProfileRead,
+    AccountProfileUpdateRequest,
+    ChangePasswordRequest,
+    UpdateNotificationsRequest,
+)
 from app.schemas.auth import (
     CompanySummary,
     FakeEmailPreview,
@@ -31,9 +37,12 @@ from app.services.auth_service import (
     create_email_verification_token,
     create_password_reset_token,
     create_user,
+    default_notification_preferences,
     get_user_by_email,
     get_user_by_id,
+    update_notification_preferences,
     update_password,
+    update_user_profile,
     verify_user_email,
 )
 from app.services.company_service import get_primary_membership, get_user_with_company
@@ -48,6 +57,8 @@ def user_to_read(user: User) -> UserRead:
         first_name=user.first_name,
         last_name=user.last_name,
         email=user.email,
+        phone_number=user.phone_number,
+        job_title=user.job_title,
         is_active=user.is_active,
         is_verified=user.is_verified,
         company=(
@@ -58,6 +69,30 @@ def user_to_read(user: User) -> UserRead:
             )
             if membership is not None and membership.company is not None
             else None
+        ),
+    )
+
+
+def user_to_account_profile(user: User) -> AccountProfileRead:
+    membership = get_primary_membership(user)
+    return AccountProfileRead(
+        id=str(user.id),
+        first_name=user.first_name,
+        last_name=user.last_name,
+        email=user.email,
+        phone_number=user.phone_number,
+        job_title=user.job_title,
+        company=(
+            CompanySummary(
+                id=str(membership.company.id),
+                legal_name=membership.company.legal_name,
+                role=membership.role,
+            )
+            if membership is not None and membership.company is not None
+            else None
+        ),
+        notification_preferences=(
+            user.notification_preferences or default_notification_preferences()
         ),
     )
 
@@ -273,3 +308,70 @@ async def me(
 ) -> UserRead:
     hydrated_user = await get_user_with_company(session, user.id) or user
     return user_to_read(hydrated_user)
+
+
+@router.get("/account", response_model=AccountProfileRead)
+async def account_profile(
+    user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db_session),
+) -> AccountProfileRead:
+    hydrated_user = await get_user_with_company(session, user.id) or user
+    return user_to_account_profile(hydrated_user)
+
+
+@router.patch("/account", response_model=AccountProfileRead)
+async def patch_account_profile(
+    payload: AccountProfileUpdateRequest,
+    user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db_session),
+) -> AccountProfileRead:
+    updated_user = await update_user_profile(
+        session,
+        user,
+        first_name=payload.first_name,
+        last_name=payload.last_name,
+        phone_number=payload.phone_number,
+        job_title=payload.job_title,
+    )
+    hydrated_user = (
+        await get_user_with_company(session, updated_user.id) or updated_user
+    )
+    return user_to_account_profile(hydrated_user)
+
+
+@router.patch("/account/password", response_model=MessageResponse)
+async def patch_account_password(
+    payload: ChangePasswordRequest,
+    user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db_session),
+) -> MessageResponse:
+    authenticated_user = await authenticate_user(
+        session,
+        user.email,
+        payload.current_password,
+    )
+    if authenticated_user is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Current password is incorrect",
+        )
+
+    await update_password(session, user, payload.new_password)
+    return MessageResponse(message="Password updated")
+
+
+@router.patch("/account/notifications", response_model=AccountProfileRead)
+async def patch_account_notifications(
+    payload: UpdateNotificationsRequest,
+    user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db_session),
+) -> AccountProfileRead:
+    updated_user = await update_notification_preferences(
+        session,
+        user,
+        payload.notification_preferences.model_dump(),
+    )
+    hydrated_user = (
+        await get_user_with_company(session, updated_user.id) or updated_user
+    )
+    return user_to_account_profile(hydrated_user)

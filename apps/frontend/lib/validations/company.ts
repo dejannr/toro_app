@@ -9,11 +9,37 @@ export const companySettingsSchema = z.object({
     .email("Enter a valid billing email")
     .optional()
     .or(z.literal("")),
+  phone_number: z.string().trim().max(40).optional().or(z.literal("")),
+  website: z.string().trim().max(160).optional().or(z.literal("")),
+  dot_number: z.string().trim().max(40).optional().or(z.literal("")),
+  mc_number: z.string().trim().max(40).optional().or(z.literal("")),
+  ein_number: z.string().trim().max(40).optional().or(z.literal("")),
   address_line1: z.string().trim().max(160).optional().or(z.literal("")),
   address_line2: z.string().trim().max(160).optional().or(z.literal("")),
   city: z.string().trim().max(120).optional().or(z.literal("")),
   state: z.string().trim().max(120).optional().or(z.literal("")),
   postal_code: z.string().trim().max(40).optional().or(z.literal("")),
+  remittance_name: z.string().trim().max(160).optional().or(z.literal("")),
+  remittance_address_line1: z
+    .string()
+    .trim()
+    .max(160)
+    .optional()
+    .or(z.literal("")),
+  remittance_address_line2: z
+    .string()
+    .trim()
+    .max(160)
+    .optional()
+    .or(z.literal("")),
+  remittance_city: z.string().trim().max(120).optional().or(z.literal("")),
+  remittance_state: z.string().trim().max(120).optional().or(z.literal("")),
+  remittance_postal_code: z
+    .string()
+    .trim()
+    .max(40)
+    .optional()
+    .or(z.literal("")),
   invoice_prefix: z.string().trim().min(1, "Invoice prefix is required").max(20),
   payment_terms_label: z
     .string()

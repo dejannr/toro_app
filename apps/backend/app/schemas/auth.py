@@ -8,6 +8,8 @@ class UserRead(BaseModel):
     first_name: str
     last_name: str
     email: EmailStr
+    phone_number: str | None = None
+    job_title: str | None = None
     is_active: bool
     is_verified: bool
     company: CompanySummary | None = None
