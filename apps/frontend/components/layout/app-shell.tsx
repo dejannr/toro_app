@@ -32,7 +32,7 @@ export function AppShell({ children, user }: AppShellProps) {
     { href: "/app/company", label: "Company", icon: Building05 },
     { href: "/app/account", label: "Account", icon: User01 }
   ];
-  const subtitle = user.company?.legal_name ?? user.email;
+  const subtitle = user.email;
   const companyName = user.company?.legal_name ?? "No company";
   const companyInitials = user.company?.legal_name
     ? user.company.legal_name

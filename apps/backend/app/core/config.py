@@ -11,11 +11,11 @@ class Settings(BaseSettings):
     jwt_secret_key: str = Field(alias="JWT_SECRET_KEY")
     jwt_algorithm: str = Field(default="HS256", alias="JWT_ALGORITHM")
     access_token_expire_minutes: int = Field(
-        default=15,
+        default=28 * 24 * 60,
         alias="ACCESS_TOKEN_EXPIRE_MINUTES",
     )
     refresh_token_expire_days: int = Field(
-        default=30,
+        default=28,
         alias="REFRESH_TOKEN_EXPIRE_DAYS",
     )
     cookie_secure: bool = Field(default=False, alias="COOKIE_SECURE")
