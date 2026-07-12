@@ -112,6 +112,12 @@ export function sendInvoiceEmail(invoiceId: string) {
   );
 }
 
+export function deleteInvoice(invoiceId: string) {
+  return apiFetch<{ message: string }>(`/invoices/${invoiceId}`, {
+    method: "DELETE"
+  });
+}
+
 export function getInvoiceDownloadUrl(invoiceId: string) {
   return `${getApiBaseUrl()}/invoices/${invoiceId}/download`;
 }

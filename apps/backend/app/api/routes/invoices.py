@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.deps import get_current_user
 from app.db.session import get_db_session
 from app.models.user import User
+from app.schemas.auth import MessageResponse
 from app.schemas.invoice import (
     CreateInvoiceRequest,
     InvoiceDraftResponse,
@@ -19,6 +20,7 @@ from app.services.invoice_service import (
     build_invoice_email_preview,
     build_invoice_pdf,
     create_invoice,
+    delete_invoice,
     generate_mock_invoice_draft,
     get_company_invoice,
     invoice_to_read,
@@ -127,6 +129,23 @@ async def patch_mark_paid(
         )
     invoice = await mark_invoice_paid(session, invoice)
     return invoice_to_read(invoice)
+
+
+@router.delete("/{invoice_id}", response_model=MessageResponse)
+async def delete_invoice_route(
+    invoice_id: UUID,
+    user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db_session),
+) -> MessageResponse:
+    company = await require_company(session, user)
+    invoice = await get_company_invoice(session, company.id, invoice_id)
+    if invoice is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Invoice not found",
+        )
+    await delete_invoice(session, invoice)
+    return MessageResponse(message="Invoice deleted")
 
 
 @router.get("/{invoice_id}/download")

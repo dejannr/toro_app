@@ -31,10 +31,12 @@ const processingMessages = [
 ];
 
 const PROCESSING_PLACEHOLDER_MS = 20_000;
+const PROCESSING_STEP_MS =
+  PROCESSING_PLACEHOLDER_MS / processingMessages.length;
 
 const invoiceSteps = [
   { id: "upload", label: "Upload documents" },
-  { id: "processing", label: "Generate draft" },
+  { id: "processing", label: "Process information" },
   { id: "review", label: "Review invoice" }
 ] as const;
 
@@ -183,7 +185,7 @@ export function CreateInvoiceFlow() {
       setProcessingIndex((current) =>
         current < processingMessages.length - 1 ? current + 1 : current
       );
-    }, 700);
+    }, PROCESSING_STEP_MS);
 
     return () => window.clearInterval(interval);
   }, [step]);

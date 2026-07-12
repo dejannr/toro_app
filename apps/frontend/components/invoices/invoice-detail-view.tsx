@@ -1,11 +1,13 @@
 "use client";
 
-import { Download01, Mail01, Wallet03 } from "@untitledui/icons";
+import { Download01, Mail01, Trash03, Wallet03 } from "@untitledui/icons";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { PageIntro } from "@/components/layout/page-intro";
 import { Button } from "@/components/ui/button";
 import {
+  deleteInvoice,
   getInvoiceDownloadUrl,
   markInvoicePaid,
   sendInvoiceEmail,
@@ -24,11 +26,13 @@ type InvoiceDetailViewProps = {
 };
 
 export function InvoiceDetailView({ invoice: initialInvoice }: InvoiceDetailViewProps) {
+  const router = useRouter();
   const [invoice, setInvoice] = useState(initialInvoice);
   const [emailPreview, setEmailPreview] = useState<Record<string, string> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSending, setIsSending] = useState(false);
   const [isPaying, setIsPaying] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   async function handleSendEmail() {
     setError(null);
@@ -53,6 +57,28 @@ export function InvoiceDetailView({ invoice: initialInvoice }: InvoiceDetailView
       setError(payError instanceof Error ? payError.message : "Unable to mark paid");
     } finally {
       setIsPaying(false);
+    }
+  }
+
+  async function handleDelete() {
+    const confirmed = window.confirm(
+      `Delete invoice ${invoice.invoice_number}? This action cannot be undone.`
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    setError(null);
+    setIsDeleting(true);
+    try {
+      await deleteInvoice(invoice.id);
+      router.push("/app/invoices");
+      router.refresh();
+    } catch (deleteError) {
+      setError(
+        deleteError instanceof Error ? deleteError.message : "Unable to delete invoice"
+      );
+      setIsDeleting(false);
     }
   }
 
@@ -164,6 +190,18 @@ export function InvoiceDetailView({ invoice: initialInvoice }: InvoiceDetailView
                         ? "Updating..."
                         : "Mark as Paid"}
                   </span>
+                </span>
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="border-[#F0D4D4] text-[#A33A3A] hover:bg-[#FFF7F7]"
+              >
+                <span className="flex items-center gap-2">
+                  <Trash03 className="h-4 w-4" />
+                  <span>{isDeleting ? "Deleting..." : "Delete Invoice"}</span>
                 </span>
               </Button>
             </div>

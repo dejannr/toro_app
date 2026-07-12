@@ -191,6 +191,11 @@ async def mark_invoice_paid(session: AsyncSession, invoice: Invoice) -> Invoice:
     return invoice
 
 
+async def delete_invoice(session: AsyncSession, invoice: Invoice) -> None:
+    await session.delete(invoice)
+    await session.commit()
+
+
 async def get_dashboard_summary(
     session: AsyncSession,
     company_id: object,
