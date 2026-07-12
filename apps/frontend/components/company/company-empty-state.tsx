@@ -3,17 +3,15 @@
 import { Building05 } from "@untitledui/icons";
 
 import { CompanyOnboardingForm } from "@/components/auth/company-onboarding-form";
+import { PageIntro } from "@/components/layout/page-intro";
 
 export function CompanyEmptyState() {
   return (
     <section className="space-y-6">
-      <div className="space-y-2">
-        <h1 className="text-2xl font-semibold text-[#161616]">Company settings</h1>
-        <p className="text-sm text-[#6F6F6F]">
-          No company is linked to this account yet. Create a workspace when you are
-          ready.
-        </p>
-      </div>
+      <PageIntro
+        title="Company settings"
+        description="No company is linked to this account yet. Create a workspace when you are ready."
+      />
 
       <div className="rounded-[16px] border border-[#E7E7E7] bg-[#FAFAFA] p-5 lg:p-6">
         <div className="flex items-start gap-3">

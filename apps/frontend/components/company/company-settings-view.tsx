@@ -16,6 +16,7 @@ import { useForm, type UseFormReturn } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PageIntro } from "@/components/layout/page-intro";
 import type { CompanyInformation, CompanyMember } from "@/lib/company";
 import { updateCurrentCompany } from "@/lib/company";
 import {
@@ -127,25 +128,22 @@ export function CompanySettingsView({
 
   return (
     <section className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="space-y-2">
-          <h1 className="text-2xl font-semibold text-[#161616]">Company settings</h1>
-          <p className="text-sm text-[#6F6F6F]">
-            Maintain the legal, operational, remittance, and invoice details used by
-            your company.
-          </p>
-        </div>
-        {activeTab !== "team" ? (
-          <Button
-            type="submit"
-            form="company-settings-form"
-            disabled={!isOwner || form.formState.isSubmitting}
-            className="bg-[#161616] text-white hover:bg-[#222222]"
-          >
-            {isOwner ? "Save changes" : "Owner access required"}
-          </Button>
-        ) : null}
-      </div>
+      <PageIntro
+        title="Company settings"
+        description="Maintain the legal, operational, remittance, and invoice details used by your company."
+        actions={
+          activeTab !== "team" ? (
+            <Button
+              type="submit"
+              form="company-settings-form"
+              disabled={!isOwner || form.formState.isSubmitting}
+              className="bg-[#161616] text-white hover:bg-[#222222]"
+            >
+              {isOwner ? "Save changes" : "Owner access required"}
+            </Button>
+          ) : null
+        }
+      />
 
       <div className="border-b border-[#EFEFEF]">
         <div className="flex flex-wrap gap-6">

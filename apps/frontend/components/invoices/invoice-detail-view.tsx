@@ -3,6 +3,7 @@
 import { Download01, Mail01, Wallet03 } from "@untitledui/icons";
 import { useState } from "react";
 
+import { PageIntro } from "@/components/layout/page-intro";
 import { Button } from "@/components/ui/button";
 import {
   getInvoiceDownloadUrl,
@@ -57,19 +58,15 @@ export function InvoiceDetailView({ invoice: initialInvoice }: InvoiceDetailView
 
   return (
     <section className="space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="space-y-2">
-          <h1 className="text-2xl font-semibold text-[#161616]">
-            Invoice {invoice.invoice_number}
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            {invoice.customer_name} · Load {invoice.load_number}
-          </p>
-        </div>
-        <span className="rounded-full border border-[#EAEAEA] bg-[#FAFAFA] px-4 py-2 text-sm font-medium text-[#161616]">
-          {invoice.status}
-        </span>
-      </div>
+      <PageIntro
+        title={`Invoice ${invoice.invoice_number}`}
+        description={`${invoice.customer_name} · Load ${invoice.load_number}`}
+        actions={
+          <span className="inline-flex rounded-full border border-[#EAEAEA] bg-[#FAFAFA] px-4 py-2 text-sm font-medium text-[#161616]">
+            {invoice.status}
+          </span>
+        }
+      />
 
       <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
         <div className="space-y-6">

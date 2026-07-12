@@ -11,6 +11,7 @@ import {
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
+import { PageIntro } from "@/components/layout/page-intro";
 import type { InvoiceRow } from "@/lib/invoices";
 
 const PAGE_SIZE = 8;
@@ -88,44 +89,41 @@ export function InvoicesTableView({ invoices }: InvoicesTableViewProps) {
 
   return (
     <section className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-semibold text-[#161616]">Invoices</h1>
-            <span className="rounded-md bg-[#FFD028] px-2 py-0.5 text-xs font-semibold text-[#161616]">
-              {filteredInvoices.length}
-            </span>
+      <PageIntro
+        title="Invoices"
+        description="Manage every invoice created from the upload and review flow."
+        titleAccessory={
+          <span className="rounded-md bg-[#FFD028] px-2 py-0.5 text-xs font-semibold text-[#161616]">
+            {filteredInvoices.length}
+          </span>
+        }
+        actions={
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              className="inline-flex h-10 items-center gap-2 rounded-xl border border-[#D7E8FF] bg-white px-4 text-sm font-medium text-[#161616] transition-colors hover:bg-[#FAFAFA]"
+            >
+              <FilterLines className="h-4 w-4" />
+              <span>Filters</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => downloadCsv(filteredInvoices)}
+              className="inline-flex h-10 items-center gap-2 rounded-xl border border-[#EAEAEA] bg-white px-4 text-sm font-medium text-[#161616] transition-colors hover:bg-[#FAFAFA]"
+            >
+              <Download01 className="h-4 w-4" />
+              <span>Export</span>
+            </button>
+            <Link
+              href="/app/create-invoice"
+              className="inline-flex h-10 items-center gap-2 rounded-xl bg-[#161616] px-4 text-sm font-medium text-white transition-colors hover:bg-[#161616]/90"
+            >
+              <PlusSquare className="h-4 w-4" />
+              <span>Add invoice</span>
+            </Link>
           </div>
-          <p className="text-sm text-muted-foreground">
-            Manage every invoice created from the upload and review flow.
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-3">
-          <button
-            type="button"
-            className="inline-flex h-10 items-center gap-2 rounded-xl border border-[#D7E8FF] bg-white px-4 text-sm font-medium text-[#161616] transition-colors hover:bg-[#FAFAFA]"
-          >
-            <FilterLines className="h-4 w-4" />
-            <span>Filters</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => downloadCsv(filteredInvoices)}
-            className="inline-flex h-10 items-center gap-2 rounded-xl border border-[#EAEAEA] bg-white px-4 text-sm font-medium text-[#161616] transition-colors hover:bg-[#FAFAFA]"
-          >
-            <Download01 className="h-4 w-4" />
-            <span>Export</span>
-          </button>
-          <Link
-            href="/app/create-invoice"
-            className="inline-flex h-10 items-center gap-2 rounded-xl bg-[#161616] px-4 text-sm font-medium text-white transition-colors hover:bg-[#161616]/90"
-          >
-            <PlusSquare className="h-4 w-4" />
-            <span>Add invoice</span>
-          </Link>
-        </div>
-      </div>
+        }
+      />
 
       <div className="grid gap-3 xl:grid-cols-[1.15fr_0.9fr_0.8fr_220px]">
         <label className="flex h-11 items-center gap-3 rounded-xl border border-[#EAEAEA] bg-white px-4">

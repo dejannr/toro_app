@@ -1,5 +1,6 @@
 import { CompanyAccessRequired } from "@/components/company/company-access-required";
 import { AppShell } from "@/components/layout/app-shell";
+import { PageIntro } from "@/components/layout/page-intro";
 import { getDashboardSummary } from "@/lib/dashboard";
 import { requireCurrentUser } from "@/lib/server-auth";
 
@@ -19,12 +20,10 @@ export default async function DashboardPage() {
     <AppShell user={user}>
       {user.company && summary ? (
         <section className="space-y-6">
-          <div className="space-y-2">
-            <h1 className="text-2xl font-semibold text-[#161616]">Dashboard</h1>
-            <p className="text-sm leading-7 text-muted-foreground">
-              A fast view of invoice activity for {user.company.legal_name}.
-            </p>
-          </div>
+          <PageIntro
+            title="Dashboard"
+            description={`A fast view of invoice activity for ${user.company.legal_name}.`}
+          />
 
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             <div className="rounded-2xl border border-[#EAEAEA] bg-[#FAFAFA] p-6">

@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { Building05 } from "@untitledui/icons";
 
+import { PageIntro } from "@/components/layout/page-intro";
 import { Button } from "@/components/ui/button";
 
 type CompanyAccessRequiredProps = {
@@ -17,15 +18,10 @@ export function CompanyAccessRequired({
 }: CompanyAccessRequiredProps) {
   return (
     <section className="max-w-2xl space-y-6">
+      <PageIntro title={title} description={description} />
       <div className="rounded-2xl border border-[#EAEAEA] bg-[#FAFAFA] p-8">
         <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white text-[#161616]">
           <Building05 className="h-6 w-6" />
-        </div>
-        <div className="mt-6 space-y-3">
-          <h1 className="text-2xl font-semibold text-[#161616]">{title}</h1>
-          <p className="max-w-xl text-sm leading-7 text-muted-foreground">
-            {description}
-          </p>
         </div>
         <div className="mt-6 flex flex-wrap gap-3">
           <Button

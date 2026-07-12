@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { useForm, type UseFormReturn } from "react-hook-form";
 
+import { PageIntro } from "@/components/layout/page-intro";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -227,12 +228,10 @@ export function CreateInvoiceFlow() {
   if (step === "processing") {
     return (
       <section className="max-w-3xl space-y-6">
-        <div className="space-y-3">
-          <h1 className="text-2xl font-semibold text-[#161616]">Processing draft</h1>
-          <p className="text-sm leading-7 text-muted-foreground">
-            The files are only used to simulate the future invoice workflow.
-          </p>
-        </div>
+        <PageIntro
+          title="Processing draft"
+          description="The files are only used to simulate the future invoice workflow."
+        />
         <div className="rounded-2xl border border-[#EAEAEA] bg-[#FAFAFA] p-8">
           <div className="flex items-center gap-4">
             <div className="h-11 w-11 animate-pulse rounded-full bg-[#FFD028]" />
@@ -253,15 +252,10 @@ export function CreateInvoiceFlow() {
   if (step === "review") {
     return (
       <section className="max-w-5xl space-y-6">
-        <div className="space-y-3">
-          <h1 className="text-2xl font-semibold text-[#161616]">
-            Review draft invoice
-          </h1>
-          <p className="text-sm leading-7 text-muted-foreground">
-            The fields are prefilled with mock values for this MVP and can be edited
-            before the invoice is created.
-          </p>
-        </div>
+        <PageIntro
+          title="Review draft invoice"
+          description="The fields are prefilled with mock values for this MVP and can be edited before the invoice is created."
+        />
 
         <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <div className="grid gap-6 lg:grid-cols-2">
@@ -421,13 +415,10 @@ export function CreateInvoiceFlow() {
 
   return (
     <section className="max-w-5xl space-y-6">
-      <div className="space-y-3">
-        <h1 className="text-2xl font-semibold text-[#161616]">Create invoice</h1>
-        <p className="text-sm leading-7 text-muted-foreground">
-          Upload the Bill of Lading and Rate Confirmation. The MVP uses those
-          files to simulate the future workflow and prefill a reviewable draft.
-        </p>
-      </div>
+      <PageIntro
+        title="Create invoice"
+        description="Upload the Bill of Lading and Rate Confirmation. The MVP uses those files to simulate the future workflow and prefill a reviewable draft."
+      />
 
       <div className="grid gap-4 lg:grid-cols-2">
         <UploadCard

@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { PageIntro } from "@/components/layout/page-intro";
 import {
   changeAccountPassword,
   type AccountProfile,
@@ -155,34 +156,31 @@ export function AccountSettingsView({ profile }: AccountSettingsViewProps) {
 
   return (
     <section className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="space-y-2">
-          <h1 className="text-2xl font-semibold text-[#161616]">Account settings</h1>
-          <p className="text-sm text-[#6F6F6F]">
-            Manage your profile, password, and notification preferences.
-          </p>
-        </div>
-        {activeTab === "profile" ? (
-          <Button
-            type="submit"
-            form="account-profile-form"
-            className="bg-[#161616] text-white hover:bg-[#222222]"
-            disabled={profileForm.formState.isSubmitting}
-          >
-            Save changes
-          </Button>
-        ) : null}
-        {activeTab === "password" ? (
-          <Button
-            type="submit"
-            form="account-password-form"
-            className="bg-[#161616] text-white hover:bg-[#222222]"
-            disabled={passwordForm.formState.isSubmitting}
-          >
-            Update password
-          </Button>
-        ) : null}
-      </div>
+      <PageIntro
+        title="Account settings"
+        description="Manage your profile, password, and notification preferences."
+        actions={
+          activeTab === "profile" ? (
+            <Button
+              type="submit"
+              form="account-profile-form"
+              className="bg-[#161616] text-white hover:bg-[#222222]"
+              disabled={profileForm.formState.isSubmitting}
+            >
+              Save changes
+            </Button>
+          ) : activeTab === "password" ? (
+            <Button
+              type="submit"
+              form="account-password-form"
+              className="bg-[#161616] text-white hover:bg-[#222222]"
+              disabled={passwordForm.formState.isSubmitting}
+            >
+              Update password
+            </Button>
+          ) : null
+        }
+      />
 
       <div className="border-b border-[#EFEFEF]">
         <div className="flex flex-wrap gap-6">
