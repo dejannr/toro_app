@@ -659,14 +659,16 @@ function NotificationRow({
   onChange
 }: NotificationRowProps) {
   return (
-    <div className="flex items-start justify-between gap-4">
-      <div className="space-y-1">
+    <div className="flex items-start gap-3">
+      <div className="shrink-0 pt-0.5">
+        <Switch checked={checked} onClick={onChange} />
+      </div>
+      <div className="min-w-0 space-y-1">
         <p className="text-sm text-[#161616]">{label}</p>
         {description ? (
           <p className="text-xs leading-5 text-[#7D7D7D]">{description}</p>
         ) : null}
       </div>
-      <Switch checked={checked} onClick={onChange} />
     </div>
   );
 }
