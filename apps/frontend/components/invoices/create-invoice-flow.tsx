@@ -1,7 +1,13 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { File06, UploadCloud02 } from "@untitledui/icons";
+import {
+  CheckCircle,
+  File06,
+  FileX02,
+  XClose,
+  UploadCloud02
+} from "@untitledui/icons";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { useForm, type UseFormReturn } from "react-hook-form";
@@ -49,20 +55,31 @@ function UploadCard({
   onFileChange
 }: UploadCardProps) {
   return (
-    <div className="rounded-2xl border border-[#EAEAEA] bg-[#FAFAFA] p-6">
+    <div className="rounded-[16px] border border-[#E5E5E5] bg-[#FAFAFA] p-5 lg:p-6">
       <div className="flex items-start justify-between gap-4">
         <div className="space-y-2">
-          <p className="text-base font-semibold text-[#161616]">{label}</p>
-          <p className="text-sm text-muted-foreground">{description}</p>
+          <div className="flex items-center gap-2">
+            <p className="text-base font-semibold text-[#161616]">{label}</p>
+            <span
+              className={
+                file
+                  ? "inline-flex rounded-full bg-[#EAF8EF] px-2.5 py-1 text-[11px] font-medium text-[#2F9E62]"
+                  : "inline-flex rounded-full bg-[#F0F0F0] px-2.5 py-1 text-[11px] font-medium text-[#6B6B6B]"
+              }
+            >
+              {file ? "Ready" : "Required"}
+            </span>
+          </div>
+          <p className="text-sm text-[#6F6F6F]">{description}</p>
         </div>
-        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-[#161616]">
+        <div className="flex h-11 w-11 items-center justify-center rounded-[12px] bg-white text-[#161616]">
           <File06 className="h-5 w-5" />
         </div>
       </div>
 
       <label
         htmlFor={id}
-        className="mt-5 flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-[#D8D8D8] bg-white px-5 py-8 text-center transition-colors hover:border-[#FFD028]"
+        className="mt-5 flex min-h-[230px] cursor-pointer flex-col items-center justify-center rounded-[16px] border border-dashed border-[#D8D8D8] bg-white px-6 py-10 text-center transition-colors hover:border-[#FFD028]"
       >
         <UploadCloud02 className="h-7 w-7 text-[#161616]" />
         <span className="mt-4 text-sm font-medium text-[#161616]">Browse Files</span>
@@ -79,16 +96,34 @@ function UploadCard({
         />
       </label>
 
-      <div className="mt-4 rounded-xl border border-[#EAEAEA] bg-white px-4 py-3 text-sm text-[#161616]">
+      <div className="mt-4 rounded-[14px] border border-[#E5E5E5] bg-white px-4 py-3 text-sm text-[#161616]">
         {file ? (
           <div className="flex items-center justify-between gap-3">
-            <span className="truncate">{file.name}</span>
-            <span className="shrink-0 text-xs text-muted-foreground">
-              {(file.size / 1024 / 1024).toFixed(2)} MB
-            </span>
+            <div className="min-w-0">
+              <p className="truncate font-medium text-[#161616]">{file.name}</p>
+              <p className="mt-1 text-xs text-[#7D7D7D]">
+                {(file.size / 1024 / 1024).toFixed(2)} MB
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#EAF8EF] text-[#2F9E62]">
+                <CheckCircle className="h-4 w-4 shrink-0" />
+              </span>
+              <button
+                type="button"
+                aria-label={`Remove ${label}`}
+                onClick={() => onFileChange(null)}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F3F3F3] text-[#8A8A8A] transition-colors hover:bg-[#E9E9E9] hover:text-[#161616]"
+              >
+                <XClose className="h-4 w-4" />
+              </button>
+            </div>
           </div>
         ) : (
-          <span className="text-muted-foreground">No file selected</span>
+          <div className="flex items-center gap-3">
+            <FileX02 className="h-5 w-5 text-[#9A9A9A]" />
+            <span className="text-[#7D7D7D]">No file selected</span>
+          </div>
         )}
       </div>
     </div>
@@ -227,19 +262,21 @@ export function CreateInvoiceFlow() {
 
   if (step === "processing") {
     return (
-      <section className="max-w-3xl space-y-6">
+      <section className="w-full space-y-6">
         <PageIntro
           title="Processing draft"
           description="The files are only used to simulate the future invoice workflow."
         />
-        <div className="rounded-2xl border border-[#EAEAEA] bg-[#FAFAFA] p-8">
+        <div className="rounded-[16px] border border-[#E5E5E5] bg-[#FAFAFA] p-8">
           <div className="flex items-center gap-4">
-            <div className="h-11 w-11 animate-pulse rounded-full bg-[#FFD028]" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FFD028]/20">
+              <div className="h-5 w-5 animate-pulse rounded-full bg-[#FFD028]" />
+            </div>
             <div className="space-y-2">
               <p className="text-base font-medium text-[#161616]">
                 {processingMessages[processingIndex]}
               </p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-[#6F6F6F]">
                 This is a mock processing stage for the MVP.
               </p>
             </div>
@@ -251,7 +288,7 @@ export function CreateInvoiceFlow() {
 
   if (step === "review") {
     return (
-      <section className="max-w-5xl space-y-6">
+      <section className="w-full space-y-6">
         <PageIntro
           title="Review draft invoice"
           description="The fields are prefilled with mock values for this MVP and can be edited before the invoice is created."
@@ -259,7 +296,7 @@ export function CreateInvoiceFlow() {
 
         <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
           <div className="grid gap-6 lg:grid-cols-2">
-            <div className="rounded-2xl border border-[#EAEAEA] bg-[#FAFAFA] p-6">
+            <div className="rounded-[16px] border border-[#E5E5E5] bg-[#FAFAFA] p-6">
               <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-[#161616]">
                 Bill To
               </h2>
@@ -280,7 +317,7 @@ export function CreateInvoiceFlow() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-[#EAEAEA] bg-[#FAFAFA] p-6">
+            <div className="rounded-[16px] border border-[#E5E5E5] bg-[#FAFAFA] p-6">
               <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-[#161616]">
                 Load Information
               </h2>
@@ -318,7 +355,7 @@ export function CreateInvoiceFlow() {
           </div>
 
           <div className="grid gap-6 lg:grid-cols-2">
-            <div className="rounded-2xl border border-[#EAEAEA] bg-[#FAFAFA] p-6">
+            <div className="rounded-[16px] border border-[#E5E5E5] bg-[#FAFAFA] p-6">
               <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-[#161616]">
                 Charges
               </h2>
@@ -353,7 +390,7 @@ export function CreateInvoiceFlow() {
                     {...form.register("total", { valueAsNumber: true })}
                   />
                 </Field>
-                <div className="rounded-xl border border-[#EAEAEA] bg-white px-4 py-3">
+                <div className="rounded-[14px] border border-[#E5E5E5] bg-white px-4 py-3">
                   <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
                     Preview
                   </p>
@@ -364,7 +401,7 @@ export function CreateInvoiceFlow() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-[#EAEAEA] bg-[#FAFAFA] p-6">
+            <div className="rounded-[16px] border border-[#E5E5E5] bg-[#FAFAFA] p-6">
               <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-[#161616]">
                 Payment Terms
               </h2>
@@ -382,7 +419,7 @@ export function CreateInvoiceFlow() {
                     {...form.register("payment_terms")}
                   />
                 </Field>
-                <div className="rounded-xl border border-[#EAEAEA] bg-white px-4 py-3 text-sm text-muted-foreground">
+                <div className="rounded-[14px] border border-[#E5E5E5] bg-white px-4 py-3 text-sm text-muted-foreground">
                   Files: {form.watch("bol_filename")} and{" "}
                   {form.watch("rate_confirmation_filename")}
                 </div>
@@ -414,16 +451,25 @@ export function CreateInvoiceFlow() {
   }
 
   return (
-    <section className="max-w-5xl space-y-6">
+    <section className="w-full space-y-6">
       <PageIntro
         title="Create invoice"
         description="Upload the Bill of Lading and Rate Confirmation. The MVP uses those files to simulate the future workflow and prefill a reviewable draft."
+        actions={
+          <Button
+            className="bg-[#161616] text-white hover:bg-[#161616]/90"
+            disabled={!canGenerate}
+            onClick={handleGenerate}
+          >
+            Generate Invoice
+          </Button>
+        }
       />
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-6 xl:grid-cols-2">
         <UploadCard
           accept="Accepted: PDF, JPG, PNG"
-          description="Bill of Lading"
+          description="Carrier proof of delivery and shipment details."
           file={bolFile}
           id="bol-file"
           label="Bill of Lading (BOL)"
@@ -431,7 +477,7 @@ export function CreateInvoiceFlow() {
         />
         <UploadCard
           accept="Accepted: PDF, JPG, PNG"
-          description="Rate Confirmation"
+          description="Broker pricing, terms, and load confirmation."
           file={rateConfirmationFile}
           id="rate-confirmation-file"
           label="Rate Confirmation"
@@ -441,14 +487,6 @@ export function CreateInvoiceFlow() {
 
       {uploadError ? <p className="text-sm text-red-600">{uploadError}</p> : null}
       {submitError ? <p className="text-sm text-red-600">{submitError}</p> : null}
-
-      <Button
-        className="bg-[#161616] text-white hover:bg-[#161616]/90"
-        disabled={!canGenerate}
-        onClick={handleGenerate}
-      >
-        Generate Invoice
-      </Button>
     </section>
   );
 }
