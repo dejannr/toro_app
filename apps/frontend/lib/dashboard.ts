@@ -9,10 +9,45 @@ export type DashboardInvoice = {
   date: string;
 };
 
-export type InvoiceStatusSummary = {
+export type PaidTotalsBucket = {
+  period_start: string;
+  period_end: string;
+  paid_invoice_count: number;
+  paid_total: string;
+};
+
+export type PaidTotalsChart = {
+  range_start: string;
+  range_end: string;
+  currency: string;
+  buckets: PaidTotalsBucket[];
+};
+
+export type InvoiceCreationBucket = {
+  period_start: string;
+  period_end: string;
+  invoice_count: number;
+};
+
+export type InvoiceCreationChart = {
+  range_start: string;
+  range_end: string;
+  buckets: InvoiceCreationBucket[];
+};
+
+export type InvoiceStatusDistributionItem = {
   status: string;
-  count: number;
-  total: string;
+  invoice_count: number;
+  invoice_total: string;
+};
+
+export type DashboardChartsData = {
+  paid_totals: PaidTotalsChart;
+  invoice_creation: InvoiceCreationChart;
+  status_distribution: {
+    currency: string;
+    items: InvoiceStatusDistributionItem[];
+  };
 };
 
 export type CompanySetupSection = {
@@ -35,9 +70,9 @@ export type DashboardSummary = {
   paid_this_month_invoices: number;
   paid_this_month_total: string;
   draft_invoices: number;
-  status_breakdown: InvoiceStatusSummary[];
   recent_invoices: DashboardInvoice[];
   company_setup: CompanySetupSummary;
+  charts: DashboardChartsData;
 };
 
 export function getDashboardSummary(cookieHeader?: string) {

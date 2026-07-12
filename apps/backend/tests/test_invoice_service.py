@@ -9,6 +9,8 @@ from app.services.invoice_service import (
     build_invoice_email_preview,
     build_next_invoice_number,
     get_dashboard_summary,
+    get_recent_month_periods,
+    get_recent_week_periods,
 )
 
 
@@ -161,9 +163,15 @@ async def test_dashboard_summary_uses_real_invoice_aggregates_and_recent_rows():
         QueryResult((2, Decimal("3100.00"))),
         QueryResult(4),
         QueryResult([invoice]),
+        QueryResult([(datetime(2026, 6, 1, tzinfo=UTC), 1, Decimal("2350.00"))]),
+        QueryResult([(datetime(2026, 7, 6, tzinfo=UTC), 3)]),
     ]
 
-    summary = await get_dashboard_summary(session, company)
+    summary = await get_dashboard_summary(
+        session,
+        company,
+        now=datetime(2026, 7, 12, tzinfo=UTC),
+    )
 
     assert summary.total_invoices == 6
     assert summary.unpaid_invoices == 2
@@ -176,3 +184,25 @@ async def test_dashboard_summary_uses_real_invoice_aggregates_and_recent_rows():
     assert summary.recent_invoices[0].date == date(2026, 7, 13)
     assert summary.company_setup.completed_sections == 3
     assert "paid_at" in str(session.execute.call_args_list[1].args[0])
+    assert len(summary.charts.paid_totals.buckets) == 6
+    assert summary.charts.paid_totals.buckets[-2].paid_total == Decimal("2350.00")
+    assert len(summary.charts.invoice_creation.buckets) == 12
+    assert summary.charts.invoice_creation.buckets[-1].invoice_count == 3
+    assert [item.status for item in summary.charts.status_distribution.items] == [
+        "Unpaid",
+        "Draft",
+        "Paid",
+    ]
+
+
+def test_chart_periods_include_current_month_and_current_monday_week():
+    now = datetime(2026, 1, 2, 17, 30, tzinfo=UTC)
+
+    month_periods = get_recent_month_periods(now)
+    week_periods = get_recent_week_periods(now)
+
+    assert month_periods[0] == (date(2025, 8, 1), date(2025, 9, 1))
+    assert month_periods[-1] == (date(2026, 1, 1), date(2026, 2, 1))
+    assert len(week_periods) == 12
+    assert week_periods[0][0] == date(2025, 10, 13)
+    assert week_periods[-1] == (date(2025, 12, 29), date(2026, 1, 5))

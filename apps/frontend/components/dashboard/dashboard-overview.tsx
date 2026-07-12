@@ -5,11 +5,11 @@ import {
   CheckCircle,
   File06,
   PlusSquare,
-  User01,
-  Wallet03
+  User01
 } from "@untitledui/icons";
 import Link from "next/link";
 
+import { DashboardChartsSection } from "@/components/dashboard/dashboard-charts";
 import { PageIntro } from "@/components/layout/page-intro";
 import type { DashboardSummary } from "@/lib/dashboard";
 
@@ -265,6 +265,8 @@ export function DashboardOverview({ summary }: DashboardOverviewProps) {
         />
       </section>
 
+      <DashboardChartsSection charts={summary.charts} />
+
       <section className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(280px,1fr)]">
         <section
           className="rounded-xl border border-[#E5E5E5] bg-[#FAFAFA] p-5"
@@ -468,40 +470,6 @@ export function DashboardOverview({ summary }: DashboardOverviewProps) {
               </li>
             ))}
           </ul>
-        </section>
-      ) : null}
-
-      {summary.status_breakdown.length ? (
-        <section
-          className="rounded-xl border border-[#E5E5E5] bg-[#FAFAFA] p-5"
-          aria-labelledby="invoice-status-title"
-        >
-          <div className="flex items-center gap-2">
-            <Wallet03 className="h-5 w-5 text-[#161616]" aria-hidden="true" />
-            <h2
-              id="invoice-status-title"
-              className="text-base font-semibold text-[#161616]"
-            >
-              Invoice status
-            </h2>
-          </div>
-          <div className="mt-4 grid gap-3 sm:grid-cols-3">
-            {summary.status_breakdown.map((item) => (
-              <Link
-                key={item.status}
-                href="/app/invoices"
-                className="flex items-center justify-between rounded-lg border border-[#E5E5E5] bg-white px-4 py-3 transition-colors hover:bg-[#FAFAFA]"
-              >
-                <StatusBadge status={item.status} />
-                <span className="text-sm text-[#6F6F6F]">
-                  <span className="font-medium tabular-nums text-[#161616]">
-                    {item.count}
-                  </span>{" "}
-                  · {formatMoney(item.total)}
-                </span>
-              </Link>
-            ))}
-          </div>
         </section>
       ) : null}
     </section>

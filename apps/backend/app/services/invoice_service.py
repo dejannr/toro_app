@@ -1,6 +1,6 @@
 import asyncio
 from collections.abc import Sequence
-from datetime import UTC, date, datetime, timedelta
+from datetime import UTC, date, datetime, time, timedelta
 from decimal import Decimal
 from io import BytesIO
 
@@ -12,9 +12,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.company import Company
 from app.models.invoice import Invoice, InvoiceStatus
 from app.schemas.dashboard import (
+    DashboardChartsData,
     DashboardInvoice,
     DashboardSummary,
-    InvoiceStatusSummary,
+    InvoiceCreationBucket,
+    InvoiceCreationChart,
+    InvoiceStatusDistributionChart,
+    InvoiceStatusDistributionItem,
+    PaidTotalsBucket,
+    PaidTotalsChart,
 )
 from app.schemas.invoice import (
     CreateInvoiceRequest,
@@ -201,11 +207,42 @@ async def delete_invoice(session: AsyncSession, invoice: Invoice) -> None:
     await session.commit()
 
 
+def get_recent_month_periods(now: datetime) -> list[tuple[date, date]]:
+    current_month = now.date().replace(day=1)
+    months: list[tuple[date, date]] = []
+
+    for offset in range(5, -1, -1):
+        month_index = current_month.month - 1 - offset
+        year = current_month.year + month_index // 12
+        month = month_index % 12 + 1
+        period_start = date(year, month, 1)
+        period_end = date(year + 1, 1, 1) if month == 12 else date(year, month + 1, 1)
+        months.append((period_start, period_end))
+
+    return months
+
+
+def get_recent_week_periods(now: datetime) -> list[tuple[date, date]]:
+    current_week_start = now.date() - timedelta(days=now.weekday())
+    earliest_week_start = current_week_start - timedelta(weeks=11)
+    return [
+        (week_start, week_start + timedelta(days=7))
+        for week_start in (
+            earliest_week_start + timedelta(weeks=offset) for offset in range(12)
+        )
+    ]
+
+
+def period_start_date(value: date | datetime) -> date:
+    return value.date() if isinstance(value, datetime) else value
+
+
 async def get_dashboard_summary(
     session: AsyncSession,
     company: Company,
+    now: datetime | None = None,
 ) -> DashboardSummary:
-    now = datetime.now(UTC)
+    now = now or datetime.now(UTC)
     month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     next_month_start = (
         month_start.replace(year=month_start.year + 1, month=1)
@@ -263,18 +300,87 @@ async def get_dashboard_summary(
         .limit(5)
     )
     recent_invoices = list(recent_result.scalars().all())
-    status_order = {
-        InvoiceStatus.DRAFT.value: 0,
-        InvoiceStatus.UNPAID.value: 1,
-        InvoiceStatus.PAID.value: 2,
-    }
-    status_breakdown = [
-        InvoiceStatusSummary(status=status, count=count, total=total)
-        for status, (count, total) in sorted(
-            status_totals.items(),
-            key=lambda item: (status_order.get(item[0], 99), item[0]),
+    month_periods = get_recent_month_periods(now)
+    paid_range_start = datetime.combine(month_periods[0][0], time.min, tzinfo=UTC)
+    paid_range_end = datetime.combine(month_periods[-1][1], time.min, tzinfo=UTC)
+    # Truncate in UTC so PostgreSQL's session timezone cannot shift a month or
+    # week boundary after asyncpg converts the value back to UTC.
+    paid_period = func.date_trunc(
+        "month",
+        func.timezone("UTC", Invoice.paid_at),
+    ).label("paid_period")
+    paid_chart_result = await session.execute(
+        select(
+            paid_period,
+            func.count(Invoice.id),
+            func.coalesce(func.sum(Invoice.total_amount), 0),
         )
-    ]
+        .where(
+            Invoice.company_id == company.id,
+            Invoice.status == InvoiceStatus.PAID.value,
+            Invoice.paid_at.is_not(None),
+            Invoice.paid_at >= paid_range_start,
+            Invoice.paid_at < paid_range_end,
+        )
+        .group_by(paid_period)
+    )
+    paid_totals_by_month = {
+        period_start_date(period_start): (int(count), Decimal(str(total)))
+        for period_start, count, total in paid_chart_result.all()
+    }
+
+    week_periods = get_recent_week_periods(now)
+    creation_range_start = datetime.combine(week_periods[0][0], time.min, tzinfo=UTC)
+    creation_range_end = datetime.combine(week_periods[-1][1], time.min, tzinfo=UTC)
+    created_period = func.date_trunc(
+        "week",
+        func.timezone("UTC", Invoice.created_at),
+    ).label("created_period")
+    creation_chart_result = await session.execute(
+        select(
+            created_period,
+            func.count(Invoice.id),
+        )
+        .where(
+            Invoice.company_id == company.id,
+            Invoice.created_at >= creation_range_start,
+            Invoice.created_at < creation_range_end,
+        )
+        .group_by(created_period)
+    )
+    invoice_counts_by_week = {
+        period_start_date(period_start): int(count)
+        for period_start, count in creation_chart_result.all()
+    }
+    status_distribution = InvoiceStatusDistributionChart(
+        currency="USD",
+        items=[
+            InvoiceStatusDistributionItem(
+                status=status,
+                invoice_count=status_totals.get(status, (0, Decimal("0.00")))[0],
+                invoice_total=status_totals.get(status, (0, Decimal("0.00")))[1],
+            )
+            for status in (
+                InvoiceStatus.UNPAID.value,
+                InvoiceStatus.DRAFT.value,
+                InvoiceStatus.PAID.value,
+            )
+        ]
+        + [
+            InvoiceStatusDistributionItem(
+                status=status,
+                invoice_count=count,
+                invoice_total=total,
+            )
+            for status, (count, total) in status_totals.items()
+            if status
+            not in {
+                InvoiceStatus.UNPAID.value,
+                InvoiceStatus.DRAFT.value,
+                InvoiceStatus.PAID.value,
+            }
+        ],
+    )
 
     return DashboardSummary(
         total_invoices=total_invoices,
@@ -284,7 +390,6 @@ async def get_dashboard_summary(
         paid_this_month_invoices=int(paid_this_month_invoices or 0),
         paid_this_month_total=Decimal(str(paid_this_month_total)),
         draft_invoices=draft_invoices,
-        status_breakdown=status_breakdown,
         recent_invoices=[
             DashboardInvoice(
                 id=str(invoice.id),
@@ -297,6 +402,41 @@ async def get_dashboard_summary(
             for invoice in recent_invoices
         ],
         company_setup=get_company_setup_summary(company),
+        charts=DashboardChartsData(
+            paid_totals=PaidTotalsChart(
+                range_start=month_periods[0][0],
+                range_end=month_periods[-1][1],
+                currency="USD",
+                buckets=[
+                    PaidTotalsBucket(
+                        period_start=period_start,
+                        period_end=period_end,
+                        paid_invoice_count=paid_totals_by_month.get(
+                            period_start,
+                            (0, Decimal("0.00")),
+                        )[0],
+                        paid_total=paid_totals_by_month.get(
+                            period_start,
+                            (0, Decimal("0.00")),
+                        )[1],
+                    )
+                    for period_start, period_end in month_periods
+                ],
+            ),
+            invoice_creation=InvoiceCreationChart(
+                range_start=week_periods[0][0],
+                range_end=week_periods[-1][1],
+                buckets=[
+                    InvoiceCreationBucket(
+                        period_start=period_start,
+                        period_end=period_end,
+                        invoice_count=invoice_counts_by_week.get(period_start, 0),
+                    )
+                    for period_start, period_end in week_periods
+                ],
+            ),
+            status_distribution=status_distribution,
+        ),
     )
 
 

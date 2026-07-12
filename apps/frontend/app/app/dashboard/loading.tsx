@@ -22,6 +22,11 @@ export default function DashboardLoading() {
           <Skeleton className="h-36 w-full" />
         </div>
         <div className="mt-6 grid gap-6 xl:grid-cols-[2fr_1fr]">
+          <Skeleton className="h-72 w-full" />
+          <Skeleton className="h-72 w-full" />
+        </div>
+        <Skeleton className="mt-6 h-72 w-full" />
+        <div className="mt-6 grid gap-6 xl:grid-cols-[2fr_1fr]">
           <Skeleton className="h-80 w-full" />
           <Skeleton className="h-80 w-full" />
         </div>
