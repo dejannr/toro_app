@@ -18,7 +18,7 @@ export function CompanyAccessRequired({
 }: CompanyAccessRequiredProps) {
   return (
     <section className="max-w-2xl space-y-6">
-      <PageIntro title={title} description={description} />
+      <PageIntro title={title} description={description} sticky />
       <div className="rounded-2xl border border-[#EAEAEA] bg-[#FAFAFA] p-8">
         <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white text-[#161616]">
           <Building05 className="h-6 w-6" />

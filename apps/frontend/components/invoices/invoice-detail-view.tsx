@@ -87,6 +87,7 @@ export function InvoiceDetailView({ invoice: initialInvoice }: InvoiceDetailView
       <PageIntro
         title={`Invoice ${invoice.invoice_number}`}
         description={`${invoice.customer_name} · Load ${invoice.load_number}`}
+        sticky
         actions={
           <span className="inline-flex rounded-full border border-[#EAEAEA] bg-[#FAFAFA] px-4 py-2 text-sm font-medium text-[#161616]">
             {invoice.status}

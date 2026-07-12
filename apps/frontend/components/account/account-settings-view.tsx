@@ -159,6 +159,7 @@ export function AccountSettingsView({ profile }: AccountSettingsViewProps) {
       <PageIntro
         title="Account settings"
         description="Manage your profile, password, and notification preferences."
+        sticky
         actions={
           activeTab === "profile" ? (
             <Button

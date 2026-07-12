@@ -131,6 +131,7 @@ export function CompanySettingsView({
       <PageIntro
         title="Company settings"
         description="Maintain the legal, operational, remittance, and invoice details used by your company."
+        sticky
         actions={
           activeTab !== "team" ? (
             <Button

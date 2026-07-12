@@ -160,6 +160,7 @@ export function DashboardOverview({ summary }: DashboardOverviewProps) {
       <PageIntro
         title="Dashboard"
         description="Review invoice activity, outstanding balances, and company setup."
+        sticky
         actions={
           <div className="flex flex-wrap items-center gap-3 max-sm:w-full max-sm:flex-col max-sm:items-stretch">
             <Link
@@ -482,6 +483,7 @@ export function DashboardCompanyRequired() {
       <PageIntro
         title="Dashboard"
         description="Review invoice activity, outstanding balances, and company setup."
+        sticky
         actions={
           <Link
             href="/app/company"
@@ -556,6 +558,7 @@ export function DashboardErrorState() {
       <PageIntro
         title="Dashboard"
         description="Review invoice activity, outstanding balances, and company setup."
+        sticky
       />
       <div className="rounded-xl border border-[#E5E5E5] bg-[#FAFAFA] p-6">
         <AlertCircle className="h-5 w-5 text-[#161616]" aria-hidden="true" />

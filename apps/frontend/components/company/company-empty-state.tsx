@@ -11,6 +11,7 @@ export function CompanyEmptyState() {
       <PageIntro
         title="Company settings"
         description="No company is linked to this account yet. Create a workspace when you are ready."
+        sticky
       />
 
       <div className="rounded-[16px] border border-[#E7E7E7] bg-[#FAFAFA] p-5 lg:p-6">

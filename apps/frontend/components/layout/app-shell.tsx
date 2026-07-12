@@ -13,7 +13,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 import type { CurrentUser } from "@/lib/auth";
 import { cn } from "@/lib/utils";
@@ -25,6 +25,7 @@ type AppShellProps = {
 
 export function AppShell({ children, user }: AppShellProps) {
   const pathname = usePathname();
+  const [hasScrolledContent, setHasScrolledContent] = useState(false);
   const navItems = [
     { href: "/app/dashboard", label: "Dashboard", icon: HomeLine },
     { href: "/app/invoices", label: "Invoices", icon: File06 },
@@ -123,10 +124,23 @@ export function AppShell({ children, user }: AppShellProps) {
         </div>
       </aside>
 
-      <div className="h-screen overflow-y-auto pt-[264px] lg:ml-[248px] lg:pt-0">
-        <div className="min-h-screen p-3 pt-0 lg:flex lg:min-h-screen lg:flex-col lg:py-3 lg:pr-3 lg:pl-0">
-          <div className="min-h-[calc(100vh-264px)] rounded-[28px] bg-white lg:flex-1 lg:min-h-0">
-            <div className="px-4 py-6 lg:px-6 lg:py-7">{children}</div>
+      <div className="h-screen overflow-hidden pt-[264px] lg:ml-[248px] lg:pt-0">
+        <div className="h-full p-3 pt-0 lg:flex lg:flex-col lg:py-3 lg:pr-3 lg:pl-0">
+          <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-[28px] bg-[#161616]">
+            <div
+              className="group/app-content min-h-0 flex-1 overflow-y-auto overscroll-y-contain"
+              data-scrolled={hasScrolledContent ? "true" : "false"}
+              onScroll={(event) => {
+                const nextHasScrolled = event.currentTarget.scrollTop > 50;
+                if (nextHasScrolled !== hasScrolledContent) {
+                  setHasScrolledContent(nextHasScrolled);
+                }
+              }}
+            >
+              <div className="min-h-full rounded-[28px] bg-white px-4 py-6 lg:px-6 lg:py-7">
+                {children}
+              </div>
+            </div>
           </div>
         </div>
       </div>

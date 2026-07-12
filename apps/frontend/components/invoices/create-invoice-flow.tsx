@@ -288,6 +288,7 @@ export function CreateInvoiceFlow() {
         <PageIntro
           title="Processing draft"
           description="The files are only used to simulate the future invoice workflow."
+          sticky
         />
         <StepProgress currentStepIndex={currentStepIndex} />
         <div className="rounded-[16px] border border-[#E5E5E5] bg-[#FAFAFA] p-8">
@@ -315,6 +316,7 @@ export function CreateInvoiceFlow() {
         <PageIntro
           title="Review draft invoice"
           description="The fields are prefilled with mock values for this MVP and can be edited before the invoice is created."
+          sticky
           actions={
             <div className="flex flex-wrap gap-3">
               <Button
@@ -485,6 +487,7 @@ export function CreateInvoiceFlow() {
       <PageIntro
         title="Create invoice"
         description="Upload the Bill of Lading and Rate Confirmation. The MVP uses those files to simulate the future workflow and prefill a reviewable draft."
+        sticky
         actions={
           <Button
             className="bg-[#161616] text-white hover:bg-[#161616]/90"

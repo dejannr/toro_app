@@ -92,6 +92,7 @@ export function InvoicesTableView({ invoices }: InvoicesTableViewProps) {
       <PageIntro
         title="Invoices"
         description="Manage every invoice created from the upload and review flow."
+        sticky
         titleAccessory={
           <span className="rounded-md bg-[#FFD028] px-2 py-0.5 text-xs font-semibold text-[#161616]">
             {filteredInvoices.length}
