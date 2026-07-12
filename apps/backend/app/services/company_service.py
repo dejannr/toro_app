@@ -5,6 +5,7 @@ from sqlalchemy.orm import selectinload
 from app.models.company import Company
 from app.models.company_membership import CompanyMembership
 from app.models.user import User
+from app.schemas.dashboard import CompanySetupSection, CompanySetupSummary
 
 
 async def get_user_with_company(session: AsyncSession, user_id: object) -> User | None:
@@ -24,6 +25,59 @@ def get_primary_membership(user: User) -> CompanyMembership | None:
     if not user.company_memberships:
         return None
     return user.company_memberships[0]
+
+
+def get_company_setup_summary(company: Company) -> CompanySetupSummary:
+    """Derive dashboard setup groups from fields already managed in Company settings."""
+
+    sections = [
+        CompanySetupSection(
+            key="company_profile",
+            label="Company profile",
+            complete=all(
+                [
+                    company.legal_name,
+                    company.billing_email,
+                    company.phone_number,
+                    company.address_line1,
+                    company.city,
+                    company.state,
+                    company.postal_code,
+                ]
+            ),
+        ),
+        CompanySetupSection(
+            key="billing_remittance",
+            label="Billing and remittance",
+            complete=all(
+                [
+                    company.remittance_name,
+                    company.remittance_address_line1,
+                    company.remittance_city,
+                    company.remittance_state,
+                    company.remittance_postal_code,
+                ]
+            ),
+        ),
+        CompanySetupSection(
+            key="invoice_settings",
+            label="Invoice settings",
+            complete=all(
+                [
+                    company.invoice_prefix,
+                    company.payment_terms_label,
+                    company.payment_terms_days >= 0,
+                ]
+            ),
+        ),
+    ]
+    completed_sections = sum(section.complete for section in sections)
+
+    return CompanySetupSummary(
+        completed_sections=completed_sections,
+        total_sections=len(sections),
+        sections=sections,
+    )
 
 
 async def create_company_with_owner(

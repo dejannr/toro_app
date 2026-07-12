@@ -11,7 +11,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.company import Company
 from app.models.invoice import Invoice, InvoiceStatus
-from app.schemas.dashboard import DashboardSummary
+from app.schemas.dashboard import (
+    DashboardInvoice,
+    DashboardSummary,
+    InvoiceStatusSummary,
+)
 from app.schemas.invoice import (
     CreateInvoiceRequest,
     InvoiceDraftResponse,
@@ -19,6 +23,7 @@ from app.schemas.invoice import (
     InvoiceSendEmailResponse,
     InvoiceTableRow,
 )
+from app.services.company_service import get_company_setup_summary
 
 MOCK_DRAFT = {
     "broker_name": "ABC Logistics",
@@ -198,30 +203,100 @@ async def delete_invoice(session: AsyncSession, invoice: Invoice) -> None:
 
 async def get_dashboard_summary(
     session: AsyncSession,
-    company_id: object,
+    company: Company,
 ) -> DashboardSummary:
-    invoices = await list_company_invoices(session, company_id)
     now = datetime.now(UTC)
-    paid_this_month = Decimal("0.00")
-
-    for invoice in invoices:
-        if (
-            invoice.status == InvoiceStatus.PAID.value
-            and invoice.paid_at is not None
-            and invoice.paid_at.year == now.year
-            and invoice.paid_at.month == now.month
-        ):
-            paid_this_month += Decimal(str(invoice.total_amount))
-
-    recent = [invoice_to_table_row(invoice) for invoice in invoices[:5]]
-    unpaid_count = sum(
-        1 for invoice in invoices if invoice.status == InvoiceStatus.UNPAID.value
+    month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    next_month_start = (
+        month_start.replace(year=month_start.year + 1, month=1)
+        if month_start.month == 12
+        else month_start.replace(month=month_start.month + 1)
     )
 
+    status_result = await session.execute(
+        select(
+            Invoice.status,
+            func.count(Invoice.id),
+            func.coalesce(func.sum(Invoice.total_amount), 0),
+        )
+        .where(Invoice.company_id == company.id)
+        .group_by(Invoice.status)
+    )
+    status_totals = {
+        status: (int(count), Decimal(str(total)))
+        for status, count, total in status_result.all()
+    }
+    total_invoices = sum(count for count, _ in status_totals.values())
+    unpaid_invoices, unpaid_total = status_totals.get(
+        InvoiceStatus.UNPAID.value,
+        (0, Decimal("0.00")),
+    )
+    draft_invoices = status_totals.get(InvoiceStatus.DRAFT.value, (0, Decimal("0.00")))[
+        0
+    ]
+
+    paid_result = await session.execute(
+        select(
+            func.count(Invoice.id),
+            func.coalesce(func.sum(Invoice.total_amount), 0),
+        ).where(
+            Invoice.company_id == company.id,
+            Invoice.status == InvoiceStatus.PAID.value,
+            Invoice.paid_at >= month_start,
+            Invoice.paid_at < next_month_start,
+        )
+    )
+    paid_this_month_invoices, paid_this_month_total = paid_result.one()
+
+    created_this_month_result = await session.execute(
+        select(func.count(Invoice.id)).where(
+            Invoice.company_id == company.id,
+            Invoice.created_at >= month_start,
+            Invoice.created_at < next_month_start,
+        )
+    )
+
+    recent_result = await session.execute(
+        select(Invoice)
+        .where(Invoice.company_id == company.id)
+        .order_by(Invoice.updated_at.desc(), Invoice.created_at.desc())
+        .limit(5)
+    )
+    recent_invoices = list(recent_result.scalars().all())
+    status_order = {
+        InvoiceStatus.DRAFT.value: 0,
+        InvoiceStatus.UNPAID.value: 1,
+        InvoiceStatus.PAID.value: 2,
+    }
+    status_breakdown = [
+        InvoiceStatusSummary(status=status, count=count, total=total)
+        for status, (count, total) in sorted(
+            status_totals.items(),
+            key=lambda item: (status_order.get(item[0], 99), item[0]),
+        )
+    ]
+
     return DashboardSummary(
-        unpaid_invoices=unpaid_count,
-        paid_this_month=float(paid_this_month),
-        recent_invoices=recent,
+        total_invoices=total_invoices,
+        invoices_created_this_month=int(created_this_month_result.scalar_one() or 0),
+        unpaid_invoices=unpaid_invoices,
+        unpaid_total=unpaid_total,
+        paid_this_month_invoices=int(paid_this_month_invoices or 0),
+        paid_this_month_total=Decimal(str(paid_this_month_total)),
+        draft_invoices=draft_invoices,
+        status_breakdown=status_breakdown,
+        recent_invoices=[
+            DashboardInvoice(
+                id=str(invoice.id),
+                invoice_number=invoice.invoice_number,
+                customer=invoice.customer_name,
+                amount=invoice.total_amount,
+                status=invoice.status,
+                date=invoice.updated_at.date(),
+            )
+            for invoice in recent_invoices
+        ],
+        company_setup=get_company_setup_summary(company),
     )
 
 

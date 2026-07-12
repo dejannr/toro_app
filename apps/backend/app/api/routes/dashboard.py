@@ -22,4 +22,4 @@ async def summary(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Create or join a company before using the dashboard",
         )
-    return await get_dashboard_summary(session, company.id)
+    return await get_dashboard_summary(session, company)
