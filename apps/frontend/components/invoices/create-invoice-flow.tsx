@@ -30,11 +30,25 @@ const processingMessages = [
   "Preparing draft invoice..."
 ];
 
+const PROCESSING_PLACEHOLDER_MS = 20_000;
+
+const invoiceSteps = [
+  { id: "upload", label: "Upload documents" },
+  { id: "processing", label: "Generate draft" },
+  { id: "review", label: "Review invoice" }
+] as const;
+
 function formatMoney(value: number) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD"
   }).format(value);
+}
+
+function wait(ms: number) {
+  return new Promise((resolve) => {
+    window.setTimeout(resolve, ms);
+  });
 }
 
 type UploadCardProps = {
@@ -194,7 +208,10 @@ export function CreateInvoiceFlow() {
     setStep("processing");
 
     try {
-      const draft = await generateInvoiceDraft(bolFile, rateConfirmationFile);
+      const [draft] = await Promise.all([
+        generateInvoiceDraft(bolFile, rateConfirmationFile),
+        wait(PROCESSING_PLACEHOLDER_MS)
+      ]);
       form.reset({
         invoice_number: draft.invoice_number,
         broker_name: draft.bill_to.broker_name,
@@ -260,6 +277,9 @@ export function CreateInvoiceFlow() {
     }
   }
 
+  const currentStepIndex =
+    step === "upload" ? 0 : step === "processing" ? 1 : 2;
+
   if (step === "processing") {
     return (
       <section className="w-full space-y-6">
@@ -267,6 +287,7 @@ export function CreateInvoiceFlow() {
           title="Processing draft"
           description="The files are only used to simulate the future invoice workflow."
         />
+        <StepProgress currentStepIndex={currentStepIndex} />
         <div className="rounded-[16px] border border-[#E5E5E5] bg-[#FAFAFA] p-8">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FFD028]/20">
@@ -292,9 +313,33 @@ export function CreateInvoiceFlow() {
         <PageIntro
           title="Review draft invoice"
           description="The fields are prefilled with mock values for this MVP and can be edited before the invoice is created."
+          actions={
+            <div className="flex flex-wrap gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setStep("upload")}
+              >
+                Back
+              </Button>
+              <Button
+                type="submit"
+                form="review-invoice-form"
+                className="bg-[#161616] text-white hover:bg-[#161616]/90"
+                disabled={form.formState.isSubmitting}
+              >
+                Create Invoice
+              </Button>
+            </div>
+          }
         />
+        <StepProgress currentStepIndex={currentStepIndex} />
 
-        <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+        <form
+          id="review-invoice-form"
+          className="space-y-6"
+          onSubmit={form.handleSubmit(onSubmit)}
+        >
           <div className="grid gap-6 lg:grid-cols-2">
             <div className="rounded-[16px] border border-[#E5E5E5] bg-[#FAFAFA] p-6">
               <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-[#161616]">
@@ -428,23 +473,6 @@ export function CreateInvoiceFlow() {
           </div>
 
           {submitError ? <p className="text-sm text-red-600">{submitError}</p> : null}
-
-          <div className="flex flex-wrap gap-3">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setStep("upload")}
-            >
-              Back
-            </Button>
-            <Button
-              type="submit"
-              className="bg-[#161616] text-white hover:bg-[#161616]/90"
-              disabled={form.formState.isSubmitting}
-            >
-              Create Invoice
-            </Button>
-          </div>
         </form>
       </section>
     );
@@ -465,6 +493,7 @@ export function CreateInvoiceFlow() {
           </Button>
         }
       />
+      <StepProgress currentStepIndex={currentStepIndex} />
 
       <div className="grid gap-6 xl:grid-cols-2">
         <UploadCard
@@ -508,6 +537,51 @@ function Field({ children, form, id, label }: FieldProps) {
           {String(form.formState.errors[id]?.message ?? "")}
         </p>
       ) : null}
+    </div>
+  );
+}
+
+type StepProgressProps = {
+  currentStepIndex: number;
+};
+
+function StepProgress({ currentStepIndex }: StepProgressProps) {
+  return (
+    <div className="grid gap-4 md:grid-cols-3 md:gap-6">
+      {invoiceSteps.map((stepItem, index) => {
+        const isCompleted = index < currentStepIndex;
+        const isActive = index === currentStepIndex;
+
+        return (
+          <div key={stepItem.id} className="space-y-2">
+            <div className="flex items-center justify-between gap-3">
+              <span
+                className="text-sm font-medium text-[#161616]"
+              >
+                {index + 1} of {invoiceSteps.length}
+              </span>
+              <span
+                className={
+                  isActive || isCompleted
+                    ? "text-sm font-normal text-[#8A8A8A]"
+                    : "text-sm font-normal text-[#8A8A8A]"
+                }
+              >
+                {stepItem.label}
+              </span>
+            </div>
+            <div className="h-2 overflow-hidden rounded-full bg-[#E9E9E9]">
+              <div
+                className={
+                  isCompleted || isActive
+                    ? "h-full rounded-full bg-[#FFD028]"
+                    : "h-full rounded-full bg-transparent"
+                }
+              />
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
