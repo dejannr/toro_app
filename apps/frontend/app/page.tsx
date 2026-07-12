@@ -1,105 +1,217 @@
-import Image from "next/image";
+import type { Metadata } from "next";
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
+import { PublicFaqAccordion } from "@/components/public/public-faq-accordion";
+import {
+  FinalCtaCard,
+  HeroProductPreview,
+  TrustChecklist,
+  WorkflowStepPreview
+} from "@/components/public/public-product-previews";
+import { PublicSiteShell } from "@/components/public/public-site-shell";
+import { homepageFaqs, buildPublicMetadata } from "@/lib/public-site";
 
-const features = [
-  "Separate user account and company onboarding",
-  "Verification-first signup path",
-  "Workspace foundation for dispatch, docs, and invoicing later"
-];
+export const metadata: Metadata = buildPublicMetadata(
+  "Trucking Invoicing Software",
+  "Create professional trucking invoices from shipment paperwork and keep billing work organized with Toro.",
+  "/"
+);
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-white text-[#161616]">
-      <header className="border-b border-[#EFE7D4] bg-white/90">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-          <Link href="/" className="flex items-center">
-            <Image
-              src="/logo-black.png"
-              alt="Toro"
-              width={120}
-              height={39}
-              priority
-              className="h-auto w-[120px]"
-            />
-          </Link>
-          <div className="flex items-center gap-3">
+    <PublicSiteShell>
+      <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:grid lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-12 lg:py-20">
+        <div>
+          <span className="inline-flex rounded-full border border-[#EFE7D4] bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-[#B38A00]">
+            Trucking invoicing software
+          </span>
+          <h1 className="mt-5 max-w-xl text-5xl font-semibold tracking-tight text-[#161616] sm:text-6xl">
+            Create trucking invoices from shipment paperwork without rebuilding
+            every detail by hand.
+          </h1>
+          <p className="mt-5 max-w-xl text-lg leading-8 text-[#666666]">
+            Toro helps carriers and small fleets prepare invoices, review the
+            details, track status, and keep billing information organized in one
+            operational workspace.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
             <Link
-              className="text-sm text-muted-foreground transition-colors hover:text-[#161616]"
-              href="/app/login"
+              href="/app/register"
+              className="inline-flex h-11 items-center justify-center rounded-[10px] bg-[#FFD028] px-5 text-sm font-medium text-[#161616] transition-colors hover:bg-[#E9BC15]"
             >
-              Log in
+              Create account
             </Link>
-            <Button
-              asChild
-              className="bg-[#161616] text-white hover:bg-[#161616]/90"
+            <Link
+              href="/features"
+              className="inline-flex h-11 items-center justify-center rounded-[10px] border border-[#EAEAEA] bg-white px-5 text-sm font-medium text-[#161616] transition-colors hover:bg-[#FAFAFA]"
             >
-              <Link href="/app/register">Start free</Link>
-            </Button>
+              See how Toro works
+            </Link>
           </div>
         </div>
-      </header>
-      <section className="mx-auto grid min-h-[calc(100vh-64px)] max-w-6xl gap-12 px-4 py-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-        <div className="space-y-8">
-          <div className="inline-flex items-center rounded-full border border-[#EFE7D4] bg-white px-4 py-2 text-xs uppercase tracking-[0.16em] text-[#B38A00]">
-            Trucking SaaS foundation
-          </div>
-          <div className="space-y-5">
-            <h1 className="max-w-xl text-5xl font-semibold leading-[1.02] tracking-tight">
-              Run your trucking back office in Toro.
-            </h1>
-            <p className="max-w-xl text-lg leading-8 text-[#5F5A4F]">
-              Create your user account, verify your email, register your company,
-              and enter the app. The workflow is ready for onboarding now and
-              for trucking operations later.
+        <div className="mt-10 lg:mt-0">
+          <HeroProductPreview />
+        </div>
+      </section>
+
+      <section id="workflow" className="border-t border-[#EFEFEF] bg-[#FAFAFA]">
+        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+          <div className="max-w-2xl">
+            <h2 className="text-3xl font-semibold tracking-tight text-[#161616]">
+              From shipment paperwork to a finished invoice
+            </h2>
+            <p className="mt-4 text-base leading-7 text-[#666666]">
+              Toro keeps invoice work close to the day-to-day trucking process.
+              Start from the documents you already have, review the details, and
+              keep the invoice moving.
             </p>
           </div>
-          <div className="flex flex-wrap gap-3">
-            <Button
-              asChild
-              size="lg"
-              className="bg-[#161616] text-white hover:bg-[#161616]/90"
-            >
-              <Link href="/app/register">Create account</Link>
-            </Button>
-            <Button asChild size="lg" variant="outline">
-              <Link href="/app/login">Sign in</Link>
-            </Button>
+          <div className="mt-8 grid gap-4 lg:grid-cols-3">
+            <WorkflowStepPreview
+              step="1"
+              title="Add shipment documents"
+              description="Start from bills of lading, rate confirmations, and the paperwork already used in your operation."
+            />
+            <WorkflowStepPreview
+              step="2"
+              title="Review invoice information"
+              description="Use Toro’s review flow to confirm customer, load, billing, and remittance information before creating the invoice."
+            />
+            <WorkflowStepPreview
+              step="3"
+              title="Finalize and manage the invoice"
+              description="Create the invoice, download the PDF, use the supported send flow, and keep the status visible afterward."
+            />
           </div>
-          <div className="grid gap-3 sm:grid-cols-3">
-            {features.map((feature) => (
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+        <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+          <div>
+            <h2 className="text-3xl font-semibold tracking-tight text-[#161616]">
+              Built for practical billing work
+            </h2>
+            <p className="mt-4 max-w-xl text-base leading-7 text-[#666666]">
+              Toro is designed to help carriers turn shipment paperwork into
+              professional invoices with less manual rebuilding, clearer status
+              handling, and more consistent billing information.
+            </p>
+            <div className="mt-8 grid gap-4 sm:grid-cols-2">
+              {[
+                [
+                  "Faster invoice preparation",
+                  "Reduce repetitive setup by starting from the documents your operation already uses."
+                ],
+                [
+                  "Cleaner workflow",
+                  "Keep billing work structured instead of spreading it across files, messages, and manual follow-up."
+                ],
+                [
+                  "Better visibility",
+                  "Know what still needs attention and keep invoice progress easier to track."
+                ],
+                [
+                  "Consistent billing details",
+                  "Use the same business and remittance information across invoice work."
+                ]
+              ].map(([title, description]) => (
+                <div
+                  key={title}
+                  className="rounded-[12px] border border-[#EAEAEA] bg-white p-5"
+                >
+                  <h3 className="text-lg font-semibold text-[#161616]">{title}</h3>
+                  <p className="mt-3 text-sm leading-7 text-[#666666]">{description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          <HeroProductPreview />
+        </div>
+      </section>
+
+      <section className="border-y border-[#EFEFEF] bg-[#FAFAFA]">
+        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+          <h2 className="text-3xl font-semibold tracking-tight text-[#161616]">
+            Built for the people running trucking operations
+          </h2>
+          <div className="mt-8 grid gap-4 lg:grid-cols-3">
+            {[
+              [
+                "Owner-operators",
+                "Prepare invoices faster, keep records organized, and avoid rebuilding the same billing details by hand."
+              ],
+              [
+                "Small carriers",
+                "Standardize invoicing across your billing process and reduce repeated back-office effort."
+              ],
+              [
+                "Billing and back-office teams",
+                "Review invoice information, manage status, download PDFs, and reduce fragmented paperwork handling."
+              ]
+            ].map(([title, description]) => (
               <div
-                key={feature}
-                className="rounded-2xl border border-[#EFE7D4] bg-white px-4 py-4 text-sm text-[#5F5A4F]"
+                key={title}
+                className="rounded-[12px] border border-[#EAEAEA] bg-white p-5"
               >
-                {feature}
+                <h3 className="text-lg font-semibold text-[#161616]">{title}</h3>
+                <p className="mt-3 text-sm leading-7 text-[#666666]">{description}</p>
               </div>
             ))}
           </div>
         </div>
-        <div className="relative min-h-[540px] overflow-hidden rounded-[28px] border-2 border-[#EFEFEF] bg-white p-2">
-          <div className="absolute left-6 top-6 z-10 rounded-full border border-[#EFE7D4] bg-white px-4 py-2 text-xs uppercase tracking-[0.16em] text-[#B38A00]">
-            Account -&gt; verify -&gt; company -&gt; app
-          </div>
-          <div className="absolute bottom-8 left-8 z-10 max-w-xs rounded-[24px] bg-white/90 p-6 shadow-[0_20px_70px_rgba(22,22,22,0.08)] backdrop-blur">
-            <p className="text-sm font-medium">Toro onboarding</p>
-            <p className="mt-2 text-sm leading-6 text-[#5F5A4F]">
-              The first step is a personal user account. Company data comes
-              after email confirmation so the workspace stays separate from the
-              person.
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+        <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+          <div>
+            <h2 className="text-3xl font-semibold tracking-tight text-[#161616]">
+              Product principles that match real carrier work
+            </h2>
+            <p className="mt-4 text-base leading-7 text-[#666666]">
+              Toro is focused on secure access, review before finalizing,
+              consistent records, and workflows small teams can actually
+              maintain.
             </p>
           </div>
-          <Image
-            src="/img.jpeg"
-            alt="Toro logistics map"
-            fill
-            priority
-            sizes="(min-width: 1024px) 50vw, 100vw"
-            className="rounded-[22px] object-cover"
+          <TrustChecklist
+            items={[
+              "Secure account access through Toro authentication.",
+              "Review invoice details before finalizing the record.",
+              "Consistent invoice, company, and remittance information.",
+              "A workflow built around carrier invoice administration."
+            ]}
           />
         </div>
       </section>
-    </main>
+
+      <section className="border-y border-[#EFEFEF] bg-[#FAFAFA]">
+        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h2 className="text-3xl font-semibold tracking-tight text-[#161616]">
+                Common questions before signup
+              </h2>
+              <p className="mt-3 text-base leading-7 text-[#666666]">
+                Straight answers about workflow, account setup, and product fit.
+              </p>
+            </div>
+            <Link href="/faq" className="text-sm font-medium text-[#161616]">
+              View all FAQs
+            </Link>
+          </div>
+          <div className="mt-8">
+            <PublicFaqAccordion items={homepageFaqs} />
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+        <FinalCtaCard
+          title="Spend less time rebuilding invoices from paperwork."
+          description="Create your account, get set up, and move into a cleaner trucking invoice workflow with Toro."
+        />
+      </section>
+    </PublicSiteShell>
   );
 }

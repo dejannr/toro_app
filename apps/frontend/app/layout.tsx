@@ -10,8 +10,12 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "App",
-  description: "Application foundation"
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+  title: {
+    default: "Toro",
+    template: "%s | Toro"
+  },
+  description: "Trucking invoicing software built for carriers and small fleets."
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
