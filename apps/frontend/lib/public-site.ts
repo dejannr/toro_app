@@ -1,21 +1,21 @@
 import type { Metadata } from "next";
 
 export const publicPrimaryNav = [
-  { href: "/features", label: "Features" },
-  { href: "/use-cases", label: "Use Cases" },
+  { href: "/#how-it-works", label: "How it works" },
+  { href: "/#features", label: "Features" },
+  { href: "/#who-its-for", label: "Who it is for" },
+  { href: "/#faq", label: "FAQ" },
   { href: "/pricing", label: "Pricing" },
-  { href: "/faq", label: "FAQ" },
-  { href: "/about", label: "About" }
 ] as const;
 
 export const footerGroups = [
   {
     title: "Product",
     links: [
-      { href: "/features", label: "Features" },
+      { href: "/#how-it-works", label: "How it works" },
+      { href: "/#features", label: "Features" },
       { href: "/pricing", label: "Pricing" },
-      { href: "/use-cases", label: "Use Cases" },
-      { href: "/faq", label: "FAQ" }
+      { href: "/#faq", label: "FAQ" }
     ]
   },
   {
@@ -46,32 +46,42 @@ export const homepageFaqs = [
   {
     question: "What does Toro help me do?",
     answer:
-      "Toro helps carriers and small fleets prepare professional invoices from shipment paperwork, review the details, and keep draft, unpaid, and paid invoices organized."
+      "Toro is trucking invoicing software that helps carriers create and manage invoices from the paperwork connected to completed shipments."
   },
   {
     question: "Who is Toro built for?",
     answer:
-      "Toro is built for owner-operators, small carriers, and billing staff who need a focused invoicing workspace without adopting a full dispatch or accounting platform."
+      "Toro is designed for owner-operators, small carriers, dispatchers who handle billing, and trucking back-office teams."
   },
   {
-    question: "Can I create a company after signing up?",
+    question: "What documents can I add?",
     answer:
-      "Yes. Registration starts with your personal access, and company setup follows after signup."
+      "Toro's current invoice workflow supports rate confirmations, bills of lading, and proof-of-delivery documents."
   },
   {
-    question: "Can I track unpaid and paid invoices?",
+    question: "Can I review information before finalizing an invoice?",
     answer:
-      "Yes. Toro already supports invoice status tracking so teams can separate draft, unpaid, and paid work."
+      "Yes. Toro keeps invoice information reviewable before the record is finalized."
   },
   {
-    question: "Can I download invoice PDFs?",
+    question: "Can I see unpaid and paid invoices?",
     answer:
-      "Yes. Generated invoices can be reviewed in Toro and downloaded as PDF files."
+      "Yes. Toro supports draft, unpaid, and paid invoice statuses so billing activity remains visible."
   },
   {
-    question: "Do I need to install anything?",
+    question: "Do I need a company profile first?",
     answer:
-      "No. Toro is browser-based and runs without local software installation."
+      "You can create your personal account first. Company information is needed before creating complete invoice records and maintaining consistent billing and remittance details."
+  },
+  {
+    question: "Is Toro a full accounting or fleet-management system?",
+    answer:
+      "No. Toro is focused on trucking invoice preparation and invoice management. It is not positioned as a replacement for every accounting, dispatch, compliance, or fleet-management tool."
+  },
+  {
+    question: "How do I get started?",
+    answer:
+      "Create an account, verify your email, add company information when you are ready, and use the guided invoice workflow from your Toro workspace."
   }
 ] as const;
 
@@ -203,10 +213,10 @@ export function buildPublicMetadata(
       siteName: "Toro",
       images: [
         {
-          url: "/img.jpeg",
+          url: "/toro-social-placeholder.svg",
           width: 1366,
-          height: 1600,
-          alt: "Toro product preview"
+          height: 768,
+          alt: "Toro trucking invoicing software"
         }
       ],
       type: "website"
@@ -215,7 +225,7 @@ export function buildPublicMetadata(
       card: "summary_large_image",
       title: `${title} | Toro`,
       description,
-      images: ["/img.jpeg"]
+      images: ["/toro-social-placeholder.svg"]
     }
   };
 }

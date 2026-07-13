@@ -19,7 +19,7 @@ export function PublicFooter() {
               className="h-auto w-[112px]"
             />
             <p className="text-sm leading-6 text-[#B9B9B9]">
-              Trucking invoicing software built for carriers and small fleets.
+              Focused invoicing software for trucking businesses.
             </p>
           </div>
 

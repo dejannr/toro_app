@@ -3,7 +3,7 @@
 import { Menu01, XClose } from "@untitledui/icons";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { publicPrimaryNav } from "@/lib/public-site";
 import { cn } from "@/lib/utils";
@@ -12,9 +12,23 @@ import { Button } from "@/components/ui/button";
 
 export function PublicNavigation() {
   const [isOpen, setIsOpen] = useState(false);
+  const [hasScrolled, setHasScrolled] = useState(false);
+
+  useEffect(() => {
+    const updateScrollState = () => setHasScrolled(window.scrollY > 8);
+
+    updateScrollState();
+    window.addEventListener("scroll", updateScrollState, { passive: true });
+    return () => window.removeEventListener("scroll", updateScrollState);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[#EFEFEF] bg-white/95 backdrop-blur">
+    <header
+      className={cn(
+        "sticky top-0 z-40 border-b border-[#EFEFEF] bg-white/95 backdrop-blur transition-shadow",
+        hasScrolled && "shadow-[0_4px_16px_rgba(22,22,22,0.04)]"
+      )}
+    >
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         <Link href="/" className="flex items-center" aria-label="Toro homepage">
           <Image
@@ -32,7 +46,7 @@ export function PublicNavigation() {
             <Link
               key={item.href}
               href={item.href}
-              className="text-sm font-medium text-[#5F5F5F] transition-colors hover:text-[#161616]"
+              className="text-sm font-medium text-[#5F5F5F] transition-colors hover:text-[#161616] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFD028] focus-visible:ring-offset-4"
             >
               {item.label}
             </Link>
@@ -42,7 +56,7 @@ export function PublicNavigation() {
         <div className="hidden items-center gap-3 lg:flex">
           <Link
             href="/app/login"
-            className="text-sm font-medium text-[#5F5F5F] transition-colors hover:text-[#161616]"
+            className="text-sm font-medium text-[#5F5F5F] transition-colors hover:text-[#161616] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFD028] focus-visible:ring-offset-4"
           >
             Log in
           </Link>

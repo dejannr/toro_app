@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1366" height="768" viewBox="0 0 1366 768" role="img" aria-labelledby="title desc">
+  <title id="title">Toro trucking invoicing software</title>
+  <desc id="desc">A simple Toro social preview placeholder.</desc>
+  <rect width="1366" height="768" fill="#FAFAFA"/>
+  <rect x="76" y="72" width="1214" height="624" rx="28" fill="#FFFFFF" stroke="#EAEAEA" stroke-width="2"/>
+  <rect x="132" y="132" width="110" height="18" rx="9" fill="#FFD028"/>
+  <text x="132" y="254" fill="#161616" font-family="Inter, Arial, sans-serif" font-size="72" font-weight="700">Toro</text>
+  <text x="132" y="330" fill="#161616" font-family="Inter, Arial, sans-serif" font-size="42" font-weight="600">Trucking invoicing software</text>
+  <text x="132" y="392" fill="#666666" font-family="Inter, Arial, sans-serif" font-size="28">A focused workflow for shipment paperwork and invoice review.</text>
+  <rect x="132" y="468" width="458" height="136" rx="16" fill="#FAFAFA" stroke="#EAEAEA" stroke-width="2"/>
+  <rect x="620" y="468" width="302" height="136" rx="16" fill="#FAFAFA" stroke="#EAEAEA" stroke-width="2"/>
+  <rect x="952" y="468" width="282" height="136" rx="16" fill="#161616"/>
+  <text x="168" y="528" fill="#161616" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="600">Shipment paperwork</text>
+  <text x="656" y="528" fill="#161616" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="600">Review details</text>
+  <text x="988" y="528" fill="#FFD028" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="600">Keep billing moving</text>
+</svg>
